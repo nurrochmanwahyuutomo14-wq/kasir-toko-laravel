@@ -35,7 +35,7 @@
 
 <body onload="window.print()">
     <div class="text-center">
-        <strong>TOKO MAS NUR</strong><br>
+        <strong>TOKO</strong><br>
         Blitar, Jawa Timur<br>
         {{ $transaction->created_at->format('d/m/Y H:i') }}
     </div>

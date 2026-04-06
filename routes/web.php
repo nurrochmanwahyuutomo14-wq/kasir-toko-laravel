@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Livewire\KasirUtama;
+use App\Livewire\BukuBon;
 use App\Livewire\MasterBarang;
 use App\Livewire\LaporanPenjualan;
 use App\Livewire\Auth\Login;
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kasir', KasirUtama::class);
     Route::get('/barang', MasterBarang::class);
     Route::get('/laporan', LaporanPenjualan::class);
+    Route::get('/buku-bon', BukuBon::class)->name('buku-bon');
 
     Route::get('/kasir/print/{id}', [PrintController::class, 'index'])->name('print.struk');
 

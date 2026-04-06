@@ -10,44 +10,57 @@
 </head>
 
 <body class="bg-gray-100 min-h-screen font-sans">
+
     @auth
-    <nav class="bg-blue-600 shadow-lg sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
 
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center text-white font-black text-xl tracking-wider pr-6 border-r border-blue-500">
-                        🛒 TOKO
-                    </div>
+    <!-- Tombol Hamburger -->
+    <button onclick="toggleSidebar()"
+        class="fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 rounded-lg shadow-lg">
+        ☰
+    </button>
 
-                    <div class="hidden sm:ml-6 sm:flex sm:space-x-2 items-center">
-                        <a href="/kasir" class="{{ request()->is('kasir') ? 'bg-blue-800 text-white shadow-inner' : 'text-blue-100 hover:bg-blue-500 hover:text-white' }} px-4 py-2 rounded-xl text-sm font-bold transition-all">
-                            💻 Kasir Utama
-                        </a>
+    <!-- Overlay -->
+    <div id="overlay" onclick="toggleSidebar()"
+        class="fixed inset-0 bg-black/40 hidden z-40"></div>
 
-                        <a href="/barang" class="{{ request()->is('barang') ? 'bg-blue-800 text-white shadow-inner' : 'text-blue-100 hover:bg-blue-500 hover:text-white' }} px-4 py-2 rounded-xl text-sm font-bold transition-all">
-                            📦 Gudang Barang
-                        </a>
+    <!-- Sidebar -->
+    <div id="sidebar"
+        class="fixed top-0 left-[-260px] w-64 h-full bg-blue-600 text-white z-50 transition-all duration-300 shadow-xl">
 
-                        <a href="/laporan" class="{{ request()->is('laporan') ? 'bg-blue-800 text-white shadow-inner' : 'text-blue-100 hover:bg-blue-500 hover:text-white' }} px-4 py-2 rounded-xl text-sm font-bold transition-all">
-                            📊 Laporan Penjualan
-                        </a>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3">
-
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg border border-red-700 transition-all flex items-center gap-2 transform hover:scale-105">
-                            🚪 Keluar
-                        </button>
-                    </form>
-                </div>
-
-            </div>
+        <!-- Header -->
+        <div class="p-4 font-black text-xl border-b border-blue-500">
+            🛒 TOKO
         </div>
-    </nav>
+
+        <!-- Menu -->
+        <div class="flex flex-col p-3 space-y-2">
+
+            <a href="/kasir" class="menu-sidebar {{ request()->is('kasir') ? 'active' : '' }}">
+                💻 Kasir Utama
+            </a>
+
+            <a href="/barang" class="menu-sidebar {{ request()->is('barang') ? 'active' : '' }}">
+                📦 Gudang Barang
+            </a>
+
+            <a href="/laporan" class="menu-sidebar {{ request()->is('laporan') ? 'active' : '' }}">
+                📊 Laporan Penjualan
+            </a>
+
+            <a href="{{ route('buku-bon') }}" class="menu-sidebar">
+                📓 Buku Bon
+            </a>
+
+            <form action="{{ route('logout') }}" method="POST" class="mt-4">
+                @csrf
+                <button class="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg font-bold">
+                    🚪 Keluar
+                </button>
+            </form>
+
+        </div>
+    </div>
+
     @endauth
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -55,6 +68,37 @@
     </main>
 
     @livewireScripts
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+
+            if (sidebar.style.left === "0px") {
+                sidebar.style.left = "-260px";
+                overlay.classList.add("hidden");
+            } else {
+                sidebar.style.left = "0px";
+                overlay.classList.remove("hidden");
+            }
+        }
+    </script>
 </body>
+<style>
+    .menu-sidebar {
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: bold;
+        display: block;
+        transition: 0.2s;
+    }
+
+    .menu-sidebar:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .menu-sidebar.active {
+        background: rgba(0, 0, 0, 0.3);
+    }
+</style>
 
 </html>
