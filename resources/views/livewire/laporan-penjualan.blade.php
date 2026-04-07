@@ -43,6 +43,115 @@
     </div>
 
     {{-- ========== KARTU STATISTIK ========== --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            {{-- ========================= --}}
+            {{-- PRODUK TERLARIS --}}
+            {{-- ========================= --}}
+            <div class="bg-white p-4 rounded-xl shadow border">
+
+                <h2 class="font-bold text-lg mb-3">🔥 Produk Terlaris</h2>
+
+                {{-- FILTER --}}
+                <div class="flex gap-2 mb-4">
+                    <select wire:model.live="filterPeriode" class="border p-2 rounded w-1/2">
+                        <option value="hari">Hari Ini</option>
+                        <option value="bulan">Bulan Ini</option>
+                    </select>
+
+                    <select wire:model.live="limit" class="border p-2 rounded w-1/2">
+                        <option value="5">Top 5</option>
+                        <option value="10">Top 10</option>
+                    </select>
+                </div>
+
+                {{-- LIST --}}
+                <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                    @forelse($this->produkTerlaris as $index => $item)
+                    <div class="flex justify-between items-center border-b pb-2">
+
+                        <div>
+                            <div class="font-semibold">
+                                #{{ $index + 1 }} {{ $item->nama_produk }}
+                            </div>
+
+                            @if($index == 0)
+                            <span class="text-green-600 text-xs font-bold">🔥 Terlaris</span>
+                            @endif
+                        </div>
+
+                        <div class="text-right text-sm">
+                            <div>Terjual: {{ $item->total_terjual }}</div>
+                            <div class="text-gray-500">
+                                Rp {{ number_format($item->total_omzet) }}
+                            </div>
+                        </div>
+
+                    </div>
+                    @empty
+                    <div class="text-gray-500 text-sm">
+                        Tidak ada data.
+                    </div>
+                    @endforelse
+                </div>
+
+            </div>
+
+            {{-- ========================= --}}
+            {{-- PRODUK TIDAK LAKU --}}
+            {{-- ========================= --}}
+            <div class="bg-white p-4 rounded-xl shadow border">
+
+                <h2 class="font-bold text-lg mb-3 text-red-600">⚠️ Produk Tidak Laku</h2>
+
+                {{-- SCROLL AREA --}}
+                <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1">
+
+                    @forelse($this->produkTidakLaku as $index => $item)
+
+                    <div class="flex justify-between items-center border-b pb-2">
+
+                        <div>
+                            <div class="font-medium">
+                                #{{ $index + 1 }} {{ $item->name }}
+                            </div>
+                        </div>
+
+                        <div class="text-right text-sm">
+
+                            <div class="text-gray-500">
+                                Terjual: {{ $item->total }}
+                            </div>
+
+                            @if($item->total == 0)
+                            <span class="text-red-500 text-xs font-bold">
+                                ❌ Tidak Pernah Terjual
+                            </span>
+                            @elseif($item->total < 5)
+                                <span class="text-yellow-500 text-xs font-bold">
+                                ⚠️ Kurang Laku
+                                </span>
+                                @endif
+
+                        </div>
+
+                    </div>
+
+                    @empty
+                    <div class="text-gray-500 text-sm">
+                        Tidak ada data produk.
+                    </div>
+                    @endforelse
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 border-l-4 border-l-green-500">

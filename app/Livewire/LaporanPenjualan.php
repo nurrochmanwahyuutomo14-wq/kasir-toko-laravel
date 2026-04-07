@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Transaction;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
 
 class LaporanPenjualan extends Component
 {
@@ -58,5 +59,53 @@ class LaporanPenjualan extends Component
             'todaySales' => $todaySales,
             'todayTransactions' => $todayTransactions
         ])->layout('layouts.app');
+    }
+
+    public function getProdukTerlaris()
+    {
+        return DB::table('transaction_details')
+            ->select('product_id', DB::raw('SUM(qty) as total'))
+            ->groupBy('product_id')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+    }
+
+    public $filterPeriode = 'hari'; // hari | bulan
+    public $limit = 5;
+
+    public function getProdukTerlarisProperty()
+    {
+        $query = DB::table('transaction_details')
+            ->join('products', 'transaction_details.product_id', '=', 'products.id')
+            ->select(
+                'products.name as nama_produk',
+                DB::raw('SUM(transaction_details.qty) as total_terjual'),
+                DB::raw('SUM(transaction_details.subtotal) as total_omzet')
+            )
+            ->groupBy('products.id', 'products.name');
+
+        if ($this->filterPeriode === 'hari') {
+            $query->whereDate('transaction_details.created_at', now()->toDateString());
+        }
+
+        if ($this->filterPeriode === 'bulan') {
+            $query->whereMonth('transaction_details.created_at', now()->month);
+        }
+
+        return $query
+            ->orderByDesc('total_terjual')
+            ->limit((int) $this->limit)
+            ->get();
+    }
+    public function getProdukTidakLakuProperty()
+    {
+        return DB::table('products')
+            ->leftJoin('transaction_details', 'products.id', '=', 'transaction_details.product_id')
+            ->select('products.name', DB::raw('COALESCE(SUM(qty),0) as total'))
+            ->groupBy('products.id', 'products.name')
+            ->orderBy('total')
+            ->limit(10)
+            ->get();
     }
 }

@@ -20,7 +20,7 @@ class KasirUtama extends Component
     public $paymentMethod = 'Cash';
     public $amountPaid = '';
     public $changeAmount = 0;
-    public $customerPhone = '';
+
 
     /**
      * FITUR SCANNER: Otomatis jalan setiap kali $search berubah.
@@ -98,7 +98,6 @@ class KasirUtama extends Component
         $this->amountPaid    = '';
         $this->changeAmount  = 0;
         $this->paymentMethod = 'Cash';
-        $this->customerPhone = '';
     }
 
     public function closeCheckoutModal()
@@ -132,7 +131,6 @@ class KasirUtama extends Component
                     'payment_method' => $this->paymentMethod,
                     'amount_paid'    => $this->paymentMethod == 'Cash' ? $paid : $total,
                     'change_amount'  => $this->changeAmount > 0 ? $this->changeAmount : 0,
-                    'customer_phone' => $this->customerPhone,
                 ]);
 
                 $this->lastTransactionId = $transaction->id;

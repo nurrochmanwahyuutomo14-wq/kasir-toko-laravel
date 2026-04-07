@@ -13,4 +13,11 @@ class Debt extends Model
     {
         return $this->hasMany(DebtDetail::class);
     }
+    protected $fillable = [
+        'nama_pengutang',
+        'total_hutang',
+        'sudah_dibayar',   // ✅ tambahkan ini
+        'status',
+        'tanggal_terakhir_bon',
+    ];
 }

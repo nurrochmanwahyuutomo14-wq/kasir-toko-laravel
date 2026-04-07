@@ -154,8 +154,6 @@
                     @php
                     $trx = \App\Models\Transaction::find($lastTransactionId);
                     $details = \App\Models\TransactionDetail::where('transaction_id', $lastTransactionId)->get();
-                    $phone = $trx->customer_phone;
-                    if (str_starts_with($phone, '0')) { $phone = '62' . substr($phone, 1); }
                     $pesan = "Halo kak, terima kasih sudah berbelanja.\n\n";
                     $pesan .= "No. Invoice: *" . $trx->invoice_number . "*\n";
                     $pesan .= "Tanggal: " . $trx->created_at->format('d/m/Y H:i') . "\n\n";
@@ -172,19 +170,12 @@
                     $pesan .= "Bayar (" . $trx->payment_method . "): Rp " . number_format($trx->amount_paid, 0, ',', '.') . "\n";
                     $pesan .= "Kembali: *Rp " . number_format($trx->change_amount, 0, ',', '.') . "*\n\n";
                     $pesan .= "Semoga barangnya bermanfaat. Ditunggu kedatangannya kembali! 🙏";
-                    $waLink = "https://wa.me/" . $phone . "?text=" . urlencode($pesan);
                     @endphp
                     <div class="mb-5 space-y-2">
                         <a href="{{ route('print.struk', $lastTransactionId) }}" target="_blank"
                             class="w-full block text-center bg-yellow-400 text-yellow-900 font-black py-3 rounded-xl border-b-4 border-yellow-600 hover:bg-yellow-300 transition-all shadow-md animate-pulse text-sm">
                             🖨️ CETAK STRUK FISIK
                         </a>
-                        @if($trx->customer_phone)
-                        <a href="{{ $waLink }}" target="_blank"
-                            class="w-full block text-center bg-green-500 text-white font-black py-3 rounded-xl border-b-4 border-green-700 hover:bg-green-600 transition-all shadow-md text-sm">
-                            💬 KIRIM STRUK KE WA
-                        </a>
-                        @endif
                     </div>
                     @endif
 
@@ -262,14 +253,6 @@
                     </span>
                 </div>
                 @endif
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">No. WhatsApp Pelanggan <span class="text-gray-400 font-normal">(Opsional)</span></label>
-                    <input type="tel" inputmode="tel" wire:model="customerPhone"
-                        placeholder="Contoh: 081234567890"
-                        class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all">
-                    <p class="text-[10px] text-gray-400 mt-1">*Diperlukan jika ingin mengirim struk via WA</p>
-                </div>
             </div>
 
             <div class="p-4 sm:p-5 border-t border-gray-100 bg-gray-50">

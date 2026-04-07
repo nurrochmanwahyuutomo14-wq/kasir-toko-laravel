@@ -13,4 +13,13 @@ class DebtDetail extends Model
     {
         return $this->belongsTo(Debt::class);
     }
+    protected $fillable = [
+        'debt_id',
+        'nama_produk',
+        'jumlah',
+        'harga_satuan',
+        'total_harga',
+        'tanggal_bon',
+        'is_lunas',   // ✅ tambahkan ini
+    ];
 }
