@@ -3,24 +3,20 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // <-- 1. Tambahkan baris ini di atas
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        if (str_contains(config('app.url'), 'ngrok-free.dev')) {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+        // <-- 2. Tambahkan blok kode ini di dalam fungsi boot
+        if (env('APP_ENV') === 'production') {
+            URL::forceScheme('https');
         }
     }
 }
