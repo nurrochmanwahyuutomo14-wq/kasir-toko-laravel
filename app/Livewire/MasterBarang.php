@@ -14,8 +14,8 @@ class MasterBarang extends Component
 
     public $search = '';
 
-    // Variabel Form
-    public $productId, $name, $barcode, $category = 'Umum';
+    // Variabel Form (✅ $keterangan ditambahkan di sini)
+    public $productId, $name, $barcode, $category = 'Umum', $keterangan;
     public $price_pcs = 0, $price_renteng = 0, $price_dus = 0;
     public $stock_initial = 0, $expired_date;
 
@@ -42,6 +42,9 @@ class MasterBarang extends Component
         $this->barcode = $product->barcode;
         $this->category = $product->category;
 
+        // ✅ Ambil data keterangan saat tombol edit ditekan
+        $this->keterangan = $product->keterangan;
+
         // Ambil harga dari relasi
         $this->price_pcs = $product->units->where('unit_name', 'Pcs')->first()->price ?? 0;
         $this->price_renteng = $product->units->where('unit_name', 'Renteng')->first()->price ?? 0;
@@ -62,10 +65,12 @@ class MasterBarang extends Component
     {
         $this->validate();
 
+        // ✅ Masukkan keterangan agar ikut tersimpan ke database
         $product = Product::updateOrCreate(['id' => $this->productId], [
             'name' => $this->name,
             'barcode' => $this->barcode,
             'category' => $this->category,
+            'keterangan' => $this->keterangan,
         ]);
 
         // Simpan/Update Harga Bertingkat
@@ -112,6 +117,11 @@ class MasterBarang extends Component
         $this->productId = null;
         $this->name = '';
         $this->barcode = '';
+        $this->category = 'Umum';
+
+        // ✅ Kosongkan kolom keterangan saat form ditutup/reset
+        $this->keterangan = '';
+
         $this->price_pcs = 0;
         $this->price_renteng = 0;
         $this->price_dus = 0;

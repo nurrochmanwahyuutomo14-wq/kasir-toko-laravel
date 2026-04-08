@@ -93,6 +93,13 @@
                             <div>
                                 <h3 class="font-bold text-lg text-gray-800">{{ $product->name }}</h3>
                                 <p class="text-[10px] text-blue-500 font-mono">{{ $product->barcode ?? '—' }}</p>
+                                <div class="mb-4">
+                                    @if($product->keterangan)
+                                    <div class="text-gray-500 text-xs italic mt-1">
+                                        {{ $product->keterangan }}
+                                    </div>
+                                    @endif
+                                </div>
                             </div>
                             <span class="bg-green-100 text-green-700 text-[10px] px-2 py-1 rounded font-bold uppercase shrink-0 ml-2">Stok Aman</span>
                         </div>

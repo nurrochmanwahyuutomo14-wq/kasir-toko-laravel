@@ -101,10 +101,35 @@
                             class="w-full p-4 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none mt-1 font-bold">
                         @error('name') <span class="text-red-500 text-[10px] font-bold">{{ $message }}</span> @enderror
                     </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase">Barcode</label>
-                        <input type="text" wire:model="barcode"
-                            class="w-full p-4 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none mt-1">
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 space-y-4">
+
+                        {{-- Barcode --}}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">
+                                Barcode
+                            </label>
+                            <input
+                                type="text"
+                                wire:model.live.debounce.300ms="barcode"
+                                placeholder="Scan atau input barcode..."
+                                class="w-full p-3 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none transition-all text-sm bg-gray-50">
+                        </div>
+
+                        {{-- Keterangan --}}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">
+                                Keterangan Tambahan
+                            </label>
+                            <input
+                                type="text"
+                                wire:model.live.debounce.300ms="keterangan"
+                                placeholder="Misal: Rak A, Expired dekat, dll..."
+                                class="w-full p-3 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none transition-all text-sm bg-gray-50">
+                            @error('keterangan')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Kategori</label>

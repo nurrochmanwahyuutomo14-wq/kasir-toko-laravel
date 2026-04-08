@@ -3,19 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany; // Tambahkan ini
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    protected $guarded = [];
+    // Gunakan fillable (lebih aman)
+    protected $fillable = [
+        'nama_produk',
+        'barcode',
+        'keterangan',
+        // tambahkan kolom lain sesuai tabel
+    ];
 
-    // Hubungan: Satu produk punya banyak satuan harga (Pcs, Renteng, Dus)
+    // Relasi: Produk punya banyak satuan
     public function units(): HasMany
     {
         return $this->hasMany(ProductUnit::class);
     }
 
-    // Hubungan: Satu produk punya banyak stok (Batch/Kadaluarsa)
+    // Relasi: Produk punya banyak batch stok
     public function batches(): HasMany
     {
         return $this->hasMany(ProductBatch::class);
