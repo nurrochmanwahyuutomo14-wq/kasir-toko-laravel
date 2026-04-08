@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Livewire\KasirUtama;
 use App\Livewire\BukuBon;
 use App\Livewire\MasterBarang;
@@ -34,4 +35,21 @@ Route::middleware('auth')->group(function () {
         return redirect('/login');
     })->name('logout');
     // ---------------------------------------
+});
+Route::get('/jalankan-migrasi', function () {
+    try {
+        // Membersihkan cache konfigurasi lama
+        Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+
+        // Menjalankan perintah pembuatan tabel (migrate)
+        Artisan::call('migrate', ['--force' => true]);
+
+        // Memasukkan data awal (seeder), seperti akun admin
+        Artisan::call('db:seed', ['--force' => true]);
+
+        return 'MANTAP! Tabel MySQL berhasil dibuat. Silakan hapus /jalankan-migrasi di URL dan kembali ke /login';
+    } catch (\Exception $e) {
+        return 'Gagal coy: ' . $e->getMessage();
+    }
 });
