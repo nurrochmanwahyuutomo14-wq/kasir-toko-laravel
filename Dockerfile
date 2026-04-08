@@ -1,18 +1,20 @@
 FROM php:8.2-apache
 
-# 1. Install ekstensi PHP & Node.js (untuk Vite/Tailwind)
+# 1. Install ekstensi PHP & Node.js (Ditambah libzip-dev dan ekstensi GD/ZIP)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     libonig-dev \
+    libzip-dev \
     zip \
     unzip \
     git \
     curl \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
-    && docker-php-ext-install pdo pdo_mysql mbstring bcmath exif
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql mbstring bcmath exif zip gd
 
 # 2. Aktifkan URL Cantik Apache
 RUN a2enmod rewrite
@@ -27,14 +29,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
 
-# 5. Install paket PHP (Laravel)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+# 5. Install paket PHP (Laravel) dengan flag --ignore-platform-reqs (ANTI ERROR)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
 
 # 6. Install paket Node.js dan Rakit Tampilan (Vite Build)
 RUN npm install
 RUN npm run build
 
-# 7. Berikan Izin Akses Folder (Agar Livewire bisa jalan)
+# 7. Berikan Izin Akses Folder
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
