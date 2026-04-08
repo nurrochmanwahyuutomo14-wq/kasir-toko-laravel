@@ -69,6 +69,13 @@
                         class="bg-white p-3 rounded-xl shadow-sm border-2 border-transparent hover:border-blue-400 active:border-blue-500 transition-all">
                         <h3 class="font-bold text-sm text-gray-800 leading-tight mb-0.5 truncate">{{ $product->name }}</h3>
                         <p class="text-[9px] text-blue-400 font-mono mb-2 truncate">{{ $product->barcode ?? '—' }}</p>
+                        <div class="mb-4">
+                            @if($product->keterangan)
+                            <div class="text-gray-500 text-xs italic mt-1">
+                                {{ $product->keterangan }}
+                            </div>
+                            @endif
+                        </div>
                         <div class="flex flex-col gap-1.5">
                             @foreach($product->units as $unit)
                             <button
