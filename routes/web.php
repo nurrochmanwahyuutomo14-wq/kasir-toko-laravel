@@ -6,25 +6,27 @@ use App\Livewire\KasirUtama;
 use App\Livewire\BukuBon;
 use App\Livewire\MasterBarang;
 use App\Livewire\LaporanPenjualan;
+use App\Livewire\Dashboard;
+use App\Livewire\RekapKasir;
 use App\Livewire\Auth\Login;
 use App\Http\Controllers\PrintController;
 
-// Halaman Login (Bisa diakses siapa saja yang belum login)
+// Halaman Login
 Route::middleware('guest')->group(function () {
     Route::get('/login', Login::class)->name('login');
 });
 
 // Halaman Inti (HANYA BISA DIAKSES JIKA SUDAH LOGIN)
 Route::middleware('auth')->group(function () {
-    // Redirect halaman utama langsung ke kasir
-    Route::get('/', function () {
-        return redirect('/kasir');
-    });
+    // Dashboard sebagai halaman utama
+    Route::get('/', Dashboard::class)->name('dashboard');
+    Route::get('/dashboard', Dashboard::class);
 
     Route::get('/kasir', KasirUtama::class);
     Route::get('/barang', MasterBarang::class);
     Route::get('/laporan', LaporanPenjualan::class);
     Route::get('/buku-bon', BukuBon::class)->name('buku-bon');
+    Route::get('/rekap-kasir', RekapKasir::class)->name('rekap-kasir');
 
     Route::get('/kasir/print/{id}', [PrintController::class, 'index'])->name('print.struk');
 
@@ -34,7 +36,6 @@ Route::middleware('auth')->group(function () {
         $request->session()->regenerateToken();
         return redirect('/login');
     })->name('logout');
-    // ---------------------------------------
 });
 Route::get('/jalankan-migrasi', function () {
     try {

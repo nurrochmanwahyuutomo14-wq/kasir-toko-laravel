@@ -15,26 +15,31 @@ class KasirUtama extends Component
     public $search = '';
     public $cart = [];
     public $lastTransactionId = null;
+    public $filterKategori = 'Semua';
 
+    // Checkout Modal
     public $showCheckoutModal = false;
     public $paymentMethod = 'Cash';
     public $amountPaid = '';
     public $changeAmount = 0;
 
+    // Fitur Diskon
+    public $discountType = 'nominal'; // nominal | persen
+    public $discountValue = 0;
+    public $discountAmount = 0;
+
+    // Catatan pelanggan
+    public $customerNote = '';
 
     /**
      * FITUR SCANNER: Otomatis jalan setiap kali $search berubah.
      */
     public function updatedSearch()
     {
-        // ✅ FIX BUG 1: Jangan proses apapun jika search kosong atau hanya spasi.
-        // Ini mencegah query where('barcode', '') yang bisa match produk tanpa barcode (seperti Coki).
         if (empty(trim($this->search))) {
             return;
         }
 
-        // Cari produk yang barcodenya SAMA PERSIS dengan yang di-scan
-        // ✅ FIX: Tambahkan ->whereNotNull('barcode') agar produk tanpa barcode tidak ikut dicocokkan
         $product = Product::whereNotNull('barcode')
             ->where('barcode', '!=', '')
             ->where('barcode', $this->search)
@@ -45,22 +50,20 @@ class KasirUtama extends Component
 
             if ($unit) {
                 $this->addToCart($product->id, $unit->id);
-
-                // ✅ FIX BUG 2: Gunakan $this->reset() khusus untuk search
-                // agar tidak memicu updatedSearch() lagi secara rekursif.
                 $this->resetSearch();
-
                 $this->dispatch('audio-play');
             }
         }
     }
 
-    /**
-     * Reset search tanpa memicu updatedSearch() lagi.
-     */
     public function resetSearch()
     {
         $this->search = '';
+    }
+
+    public function setFilterKategori($kategori)
+    {
+        $this->filterKategori = $kategori;
     }
 
     public function addToCart($productId, $unitId)
@@ -70,6 +73,14 @@ class KasirUtama extends Component
         $product = Product::find($productId);
         $unit = ProductUnit::find($unitId);
         $cartKey = $productId . '-' . $unitId;
+
+        // Cek stok
+        $stokTotal = $product->batches->sum('stock_qty');
+        $qtyDiKeranjang = isset($this->cart[$cartKey]) ? $this->cart[$cartKey]['qty'] : 0;
+        if ($stokTotal <= 0 || $qtyDiKeranjang * $unit->conversion_qty >= $stokTotal) {
+            session()->flash('warning_stok', 'Stok ' . $product->name . ' tidak mencukupi!');
+            return;
+        }
 
         if (isset($this->cart[$cartKey])) {
             $this->cart[$cartKey]['qty']++;
@@ -84,11 +95,39 @@ class KasirUtama extends Component
                 'conversion_qty' => $unit->conversion_qty,
             ];
         }
+
+        // Recalculate diskon setelah cart berubah
+        $this->hitungDiskon();
+    }
+
+    public function updateQty($key, $delta)
+    {
+        if (!isset($this->cart[$key])) return;
+
+        $newQty = $this->cart[$key]['qty'] + $delta;
+
+        if ($newQty <= 0) {
+            $this->removeFromCart($key);
+            return;
+        }
+
+        $this->cart[$key]['qty'] = $newQty;
+        $this->hitungDiskon();
     }
 
     public function removeFromCart($key)
     {
         unset($this->cart[$key]);
+        $this->hitungDiskon();
+    }
+
+    public function clearCart()
+    {
+        $this->cart = [];
+        $this->discountValue = 0;
+        $this->discountAmount = 0;
+        $this->customerNote = '';
+        $this->lastTransactionId = null;
     }
 
     public function openCheckoutModal()
@@ -98,6 +137,9 @@ class KasirUtama extends Component
         $this->amountPaid    = '';
         $this->changeAmount  = 0;
         $this->paymentMethod = 'Cash';
+        $this->discountType  = 'nominal';
+        $this->discountValue = 0;
+        $this->discountAmount = 0;
     }
 
     public function closeCheckoutModal()
@@ -105,17 +147,73 @@ class KasirUtama extends Component
         $this->showCheckoutModal = false;
     }
 
+    public function updatedDiscountValue()
+    {
+        $this->hitungDiskon();
+        $this->hitungKembalian();
+    }
+
+    public function updatedDiscountType()
+    {
+        $this->discountValue = 0;
+        $this->discountAmount = 0;
+        $this->hitungKembalian();
+    }
+
+    public function hitungDiskon()
+    {
+        $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['qty']);
+        $val = (float) $this->discountValue;
+
+        if ($this->discountType === 'persen') {
+            $persen = min($val, 100);
+            $this->discountAmount = round($subtotal * $persen / 100);
+        } else {
+            $this->discountAmount = min($val, $subtotal);
+        }
+
+        $this->hitungKembalian();
+    }
+
     public function updatedAmountPaid()
     {
-        $total              = collect($this->cart)->sum(fn($item) => $item['price'] * $item['qty']);
-        $paid               = (float) preg_replace('/[^0-9.]/', '', $this->amountPaid);
+        $this->hitungKembalian();
+    }
+
+    public function hitungKembalian()
+    {
+        $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['qty']);
+        $total    = $subtotal - $this->discountAmount;
+        $paid     = (float) preg_replace('/[^0-9.]/', '', $this->amountPaid);
         $this->changeAmount = $paid - $total;
+    }
+
+    /**
+     * Quick payment: set amountPaid langsung dari tombol nominal
+     */
+    public function setAmountPaid($amount)
+    {
+        if ($amount === 'pas') {
+            $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['qty']);
+            $this->amountPaid = (string)($subtotal - $this->discountAmount);
+        } else {
+            $current = (float) preg_replace('/[^0-9.]/', '', $this->amountPaid ?? '0');
+            $this->amountPaid = (string)($current + $amount);
+        }
+        $this->hitungKembalian();
+    }
+
+    public function resetAmountPaid()
+    {
+        $this->amountPaid = '';
+        $this->changeAmount = 0;
     }
 
     public function processPayment()
     {
-        $total = collect($this->cart)->sum(fn($item) => $item['price'] * $item['qty']);
-        $paid  = (float) preg_replace('/[^0-9.]/', '', $this->amountPaid);
+        $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['qty']);
+        $total    = $subtotal - $this->discountAmount;
+        $paid     = (float) preg_replace('/[^0-9.]/', '', $this->amountPaid);
 
         if ($this->paymentMethod == 'Cash' && $paid < $total) {
             session()->flash('error_payment', 'Uang yang diterima kurang!');
@@ -123,14 +221,18 @@ class KasirUtama extends Component
         }
 
         try {
-            DB::transaction(function () use ($total, $paid) {
+            DB::transaction(function () use ($subtotal, $total, $paid) {
                 $transaction = Transaction::create([
                     'invoice_number' => 'INV-' . now()->format('YmdHis'),
                     'total_price'    => $total,
-                    'user_id'        => 1,
+                    'user_id'        => auth()->id() ?? 1,
                     'payment_method' => $this->paymentMethod,
                     'amount_paid'    => $this->paymentMethod == 'Cash' ? $paid : $total,
                     'change_amount'  => $this->changeAmount > 0 ? $this->changeAmount : 0,
+                    'discount_type'  => $this->discountType,
+                    'discount_value' => $this->discountValue,
+                    'discount_amount'=> $this->discountAmount,
+                    'customer_note'  => $this->customerNote,
                 ]);
 
                 $this->lastTransactionId = $transaction->id;
@@ -159,7 +261,10 @@ class KasirUtama extends Component
 
             $this->showCheckoutModal = false;
             $this->cart = [];
-            session()->flash('success', 'Transaksi Berhasil Disimpan!');
+            $this->discountValue  = 0;
+            $this->discountAmount = 0;
+            $this->customerNote   = '';
+            session()->flash('success', 'Transaksi Berhasil! 🎉');
         } catch (\Exception $e) {
             session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -167,13 +272,22 @@ class KasirUtama extends Component
 
     public function render()
     {
-        $products = Product::with('units')
-            ->where('name', 'like', '%' . $this->search . '%')
-            ->get();
+        $query = Product::with(['units', 'batches']);
 
-        $total = collect($this->cart)->sum(fn($item) => $item['price'] * $item['qty']);
+        if ($this->search) {
+            $query->where('name', 'like', '%' . $this->search . '%');
+        }
 
-        return view('livewire.kasir-utama', compact('products', 'total'))
+        if ($this->filterKategori && $this->filterKategori !== 'Semua') {
+            $query->where('category', $this->filterKategori);
+        }
+
+        $products = $query->get();
+
+        $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['qty']);
+        $total    = $subtotal - $this->discountAmount;
+
+        return view('livewire.kasir-utama', compact('products', 'subtotal', 'total'))
             ->layout('layouts.app');
     }
 

@@ -1,161 +1,223 @@
-<div x-data="{ showMobileCart: false }"
-    @keydown.window.f10.prevent="$wire.openCheckoutModal()"
-    @keydown.window.escape.prevent="$wire.set('search', '')">
+<div x-data="{ showMobileCart: false }" @keydown.window.f10.prevent="$wire.openCheckoutModal()">
 
-    <div class="grid grid-cols-12 gap-6">
+    {{-- ======== FLASH MESSAGES ======== --}}
+    @if(session()->has('success'))
+    <div class="flash-success mb-4" style="font-size:18px; display:flex; align-items:center; gap:10px;">
+        ✅ {{ session('success') }}
+    </div>
+    @endif
+    @if(session()->has('warning_stok'))
+    <div style="background:#fff3cd; border-left:6px solid #f59e0b; color:#92400e; font-size:17px; font-weight:700; padding:16px 18px; border-radius:14px; margin-bottom:14px;">
+        ⚠️ {{ session('warning_stok') }}
+    </div>
+    @endif
+    @if(session()->has('error'))
+    <div style="background:#fee2e2; border-left:6px solid #ef4444; color:#991b1b; font-size:17px; font-weight:700; padding:16px 18px; border-radius:14px; margin-bottom:14px;">
+        ❌ {{ session('error') }}
+    </div>
+    @endif
 
-        {{-- ========== PANEL KIRI: Produk ========== --}}
-        <div class="col-span-12 lg:col-span-8">
+    @php $warnings = $this->getWarnings(); @endphp
 
-            @php $warnings = $this->getWarnings(); @endphp
+    {{-- ======== PERINGATAN STOK/EXPIRED (COMPACT) ======== --}}
+    @if($warnings['stok']->count() > 0 || $warnings['expired']->count() > 0)
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+        @foreach($warnings['stok'] as $p)
+        <div wire:key="warn-stok-{{ $p->id }}"
+            style="background:#fee2e2; border-left:4px solid #ef4444; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:800; color:#991b1b; display:flex; align-items:center; gap:8px;">
+            ⚠️ {{ $p->name }} sisa {{ $p->batches->sum('stock_qty') }}
+        </div>
+        @endforeach
+        @foreach($warnings['expired'] as $e)
+        <div wire:key="warn-exp-{{ $e->id }}"
+            style="background:#fff3cd; border-left:4px solid #f59e0b; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:800; color:#92400e; display:flex; align-items:center; gap:8px;">
+            ⌛ {{ $e->product->name }} exp {{ date('d/m', strtotime($e->expired_date)) }}
+        </div>
+        @endforeach
+    </div>
+    @endif
 
-            @if($warnings['stok']->count() > 0 || $warnings['expired']->count() > 0)
-            <div class="hidden md:grid mb-4 grid-cols-1 md:grid-cols-2 gap-3">
-                @foreach($warnings['stok'] as $p)
-                <div wire:key="warn-stok-{{ $p->id }}"
-                    class="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-xl flex items-center gap-3 shadow-sm">
-                    <span class="text-lg">⚠️</span>
-                    <div>
-                        <p class="text-[10px] font-bold text-red-400 uppercase leading-none">Stok Kritis!</p>
-                        <p class="text-xs font-black text-red-700">{{ $p->name }} sisa {{ $p->batches->sum('stock_qty') }}</p>
-                    </div>
-                </div>
-                @endforeach
+    {{-- ======== LAYOUT UTAMA ======== --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-                @foreach($warnings['expired'] as $e)
-                <div wire:key="warn-expired-{{ $e->id }}"
-                    class="bg-orange-50 border-l-4 border-orange-500 p-3 rounded-r-xl flex items-center gap-3 shadow-sm">
-                    <span class="text-lg">⌛</span>
-                    <div>
-                        <p class="text-[10px] font-bold text-orange-400 uppercase leading-none">Hampir Expired!</p>
-                        <p class="text-xs font-black text-orange-700">{{ $e->product->name }} ({{ date('d/m', strtotime($e->expired_date)) }})</p>
-                    </div>
-                </div>
-                @endforeach
+        @php
+            $kategoriList = ['Semua', 'Umum', 'Makanan', 'Minuman', 'Snack', 'Rokok', 'Sembako'];
+        @endphp
+
+        {{-- ===== PANEL KIRI: Produk ===== --}}
+        <div class="lg:col-span-8">
+            {{-- Search Bar --}}
+            <div style="background:white; padding:14px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08); margin-bottom:12px; border-left:5px solid #1d4ed8;">
+                <label style="font-size:13px; font-weight:800; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:8px;">
+                    🔍 Scan Barcode / Cari Barang
+                </label>
+                <input
+                    wire:model.live.debounce.300ms="search"
+                    type="text"
+                    inputmode="text"
+                    autocomplete="off"
+                    placeholder="Ketik nama barang atau scan barcode..."
+                    style="width:100%; padding:14px 16px; border:2.5px solid #e5e7eb; border-radius:12px; font-size:18px; font-weight:600; background:#f9fafb; outline:none; transition:border-color 0.2s; box-sizing:border-box;"
+                    onfocus="this.style.borderColor='#1d4ed8'"
+                    onblur="this.style.borderColor='#e5e7eb'">
             </div>
-            @endif
 
-            <div x-data="{ minimize: true }">
-
-                {{-- Search Bar --}}
-                <div class="bg-white p-3 md:p-4 rounded-xl shadow-sm mb-3 border-l-4 border-blue-500">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Input Scanner / Pencarian</label>
-                    <input
-                        wire:model.live.debounce.300ms="search"
-                        type="text"
-                        inputmode="text"
-                        autocomplete="off"
-                        placeholder="Scan Barcode atau Ketik Nama Barang..."
-                        class="w-full p-3 md:p-4 border-2 border-gray-100 rounded-lg focus:border-blue-500 outline-none transition-all font-mono text-base md:text-lg bg-gray-50">
+            {{-- Filter Kategori — scroll horizontal --}}
+            <div style="overflow-x:auto; white-space:nowrap; margin-bottom:12px; padding-bottom:4px;">
+                <div style="display:inline-flex; gap:8px; padding:2px 0;">
+                    @foreach($kategoriList as $kat)
+                    <button
+                        wire:click="setFilterKategori('{{ $kat }}')"
+                        style="
+                            padding: 10px 20px;
+                            border-radius: 50px;
+                            font-size: 15px;
+                            font-weight: 800;
+                            border: 2.5px solid {{ $filterKategori === $kat ? '#1d4ed8' : '#e5e7eb' }};
+                            background: {{ $filterKategori === $kat ? '#1d4ed8' : 'white' }};
+                            color: {{ $filterKategori === $kat ? 'white' : '#4b5563' }};
+                            cursor: pointer;
+                            white-space: nowrap;
+                            transition: all 0.2s;
+                            min-height: 44px;
+                        ">
+                        {{ $kat }}
+                    </button>
+                    @endforeach
                 </div>
+            </div>
 
-                {{-- Toggle Katalog (Mobile Only) --}}
-                <button
-                    @click="minimize = !minimize"
-                    class="lg:hidden w-full bg-blue-50 text-blue-700 border-2 border-blue-200 font-bold py-3 rounded-xl mb-3 shadow-sm transition-all flex justify-center items-center gap-2 text-sm">
-                    <span x-text="minimize ? '🔽 BUKA KATALOG PRODUK' : '🔼 TUTUP KATALOG'"></span>
-                </button>
+            {{-- Grid Produk — 1 KOLOM di HP, 2 KOLOM di desktop --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
 
-                {{-- Grid Produk MOBILE (2 kolom compact) --}}
-                <div
-                    x-show="!minimize || $wire.search.length > 0"
-                    x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 -translate-y-2"
-                    x-transition:enter-end="opacity-100 translate-y-0"
-                    class="grid grid-cols-2 gap-3 lg:hidden">
+                @forelse($products as $product)
+                @php
+                    $stokTotal = $product->batches->sum('stock_qty');
+                    $stokKritis = $stokTotal <= $product->min_stock;
+                @endphp
+                <div wire:key="product-{{ $product->id }}"
+                    style="background:white; border-radius:16px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,0.07); border:2px solid {{ $stokKritis ? '#fecaca' : '#f3f4f6' }};">
 
-                    @foreach($products as $product)
-                    <div wire:key="mob-product-{{ $product->id }}"
-                        class="bg-white p-3 rounded-xl shadow-sm border-2 border-transparent hover:border-blue-400 active:border-blue-500 transition-all">
-                        <h3 class="font-bold text-sm text-gray-800 leading-tight mb-0.5 truncate">{{ $product->name }}</h3>
-                        <p class="text-[9px] text-blue-400 font-mono mb-2 truncate">{{ $product->barcode ?? '—' }}</p>
-                        <div class="mb-4">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                        <div style="flex:1; min-width:0;">
+                            <h3 style="font-size:18px; font-weight:800; color:#111827; margin:0; line-height:1.3;">
+                                {{ $product->name }}
+                            </h3>
+                            @if($product->barcode)
+                            <span style="font-size:12px; color:#6b7280; font-family:monospace; background:#f3f4f6; padding:2px 8px; border-radius:6px; display:inline-block; margin-top:4px;">
+                                {{ $product->barcode }}
+                            </span>
+                            @endif
                             @if($product->keterangan)
-                            <div class="text-gray-500 text-xs italic mt-1">
+                            <p style="font-size:14px; color:#6b7280; margin:4px 0 0; font-style:italic;">
                                 {{ $product->keterangan }}
-                            </div>
+                            </p>
                             @endif
                         </div>
-                        <div class="flex flex-col gap-1.5">
-                            @foreach($product->units as $unit)
-                            <button
-                                wire:key="mob-unit-{{ $product->id }}-{{ $unit->id }}"
-                                wire:click="addToCart({{ $product->id }}, {{ $unit->id }})"
-                                class="flex justify-between items-center p-2.5 text-xs bg-gray-50 active:bg-blue-600 active:text-white hover:bg-blue-600 hover:text-white rounded-lg transition-all font-medium touch-manipulation">
-                                <span>{{ $unit->unit_name }}</span>
-                                <span class="font-bold">Rp {{ number_format($unit->price, 0, ',', '.') }}</span>
-                            </button>
-                            @endforeach
+                        <div style="text-align:right; flex-shrink:0; margin-left:10px;">
+                            <span style="background:{{ $stokKritis ? '#fee2e2' : '#dcfce7' }}; color:{{ $stokKritis ? '#991b1b' : '#15803d' }}; font-size:13px; font-weight:800; padding:4px 10px; border-radius:8px; display:inline-block;">
+                                {{ $stokKritis ? '⚠️ Kritis' : '✅ Aman' }}
+                            </span>
+                            <p style="font-size:13px; color:#6b7280; margin:4px 0 0; font-weight:600;">
+                                Stok: {{ $stokTotal }}
+                            </p>
                         </div>
                     </div>
-                    @endforeach
-                </div>
 
-                {{-- Grid Produk DESKTOP --}}
-                <div class="hidden lg:grid grid-cols-2 gap-4">
-                    @foreach($products as $product)
-                    <div wire:key="desk-product-{{ $product->id }}"
-                        class="bg-white p-5 rounded-xl shadow-sm border-2 border-transparent hover:border-blue-500 transition-all">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800">{{ $product->name }}</h3>
-                                <p class="text-[10px] text-blue-500 font-mono">{{ $product->barcode ?? '—' }}</p>
-                                <div class="mb-4">
-                                    @if($product->keterangan)
-                                    <div class="text-gray-500 text-xs italic mt-1">
-                                        {{ $product->keterangan }}
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                            <span class="bg-green-100 text-green-700 text-[10px] px-2 py-1 rounded font-bold uppercase shrink-0 ml-2">Stok Aman</span>
-                        </div>
-                        <div class="grid grid-cols-1 gap-2">
-                            @foreach($product->units as $unit)
-                            <button
-                                wire:key="desk-unit-{{ $product->id }}-{{ $unit->id }}"
-                                wire:click="addToCart({{ $product->id }}, {{ $unit->id }})"
-                                class="flex justify-between items-center p-3 text-sm bg-gray-50 hover:bg-blue-600 hover:text-white rounded-lg transition-all">
-                                <span class="font-medium">{{ $unit->unit_name }}</span>
-                                <span class="font-bold">Rp {{ number_format($unit->price, 0, ',', '.') }}</span>
-                            </button>
-                            @endforeach
-                        </div>
+                    {{-- Tombol Unit — BESAR & jelas --}}
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        @foreach($product->units as $unit)
+                        <button
+                            wire:key="unit-{{ $product->id }}-{{ $unit->id }}"
+                            wire:click="addToCart({{ $product->id }}, {{ $unit->id }})"
+                            @if($stokTotal <= 0) disabled @endif
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 14px 16px;
+                                background: {{ $stokTotal <= 0 ? '#f3f4f6' : '#eff6ff' }};
+                                border: 2px solid {{ $stokTotal <= 0 ? '#e5e7eb' : '#bfdbfe' }};
+                                border-radius: 12px;
+                                cursor: {{ $stokTotal <= 0 ? 'not-allowed' : 'pointer' }};
+                                transition: all 0.15s;
+                                width: 100%;
+                                text-align: left;
+                                min-height: 56px;
+                                touch-action: manipulation;
+                            "
+                            onmousedown="this.style.background='#1d4ed8'; this.style.color='white';"
+                            onmouseup="this.style.background='#eff6ff'; this.style.color='';"
+                            ontouchstart="this.style.background='#1d4ed8'; this.style.color='white';"
+                            ontouchend="this.style.background='#eff6ff'; this.style.color='';">
+                            <span style="font-size:16px; font-weight:700; color:{{ $stokTotal <= 0 ? '#9ca3af' : '#1e40af' }};">
+                                + {{ $unit->unit_name }}
+                            </span>
+                            <span style="font-size:18px; font-weight:900; color:{{ $stokTotal <= 0 ? '#9ca3af' : '#1d4ed8' }};">
+                                Rp {{ number_format($unit->price, 0, ',', '.') }}
+                            </span>
+                        </button>
+                        @endforeach
                     </div>
-                    @endforeach
+
                 </div>
+                @empty
+                <div style="text-align:center; padding:48px 20px; background:white; border-radius:16px; grid-column:1/-1;">
+                    <p style="font-size:48px; margin:0 0 12px;">🔍</p>
+                    <p style="font-size:17px; font-weight:700; color:#9ca3af;">Barang tidak ditemukan</p>
+                </div>
+                @endforelse
 
             </div>
         </div>
-        {{-- ========== AKHIR PANEL KIRI ========== --}}
 
-        {{-- ========== PANEL KANAN: Keranjang (DESKTOP ONLY) ========== --}}
-        <div class="hidden lg:block lg:col-span-4">
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden sticky top-6 border border-gray-100">
-                <div class="bg-blue-600 p-4 text-white font-bold flex justify-between items-center">
-                    <span>🛒 RINCIAN BELANJA</span>
-                    <span class="bg-blue-500 px-2 py-1 rounded text-xs">{{ count($cart) }} Item</span>
+        {{-- ===== PANEL KANAN: Keranjang (DESKTOP) ===== --}}
+        <div class="hidden lg:block lg:col-span-4" style="position:sticky; top:24px; align-self:start;">
+            <div style="background:white; border-radius:20px; box-shadow:0 4px 24px rgba(0,0,0,0.12); overflow:hidden; border:1px solid #e5e7eb;">
+
+                {{-- Header Keranjang --}}
+                <div style="background:linear-gradient(135deg,#1e40af,#1d4ed8); padding:18px 20px; color:white; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:18px; font-weight:900;">🛒 Keranjang Belanja</span>
+                    @if(!empty($cart))
+                    <button wire:click="clearCart"
+                        style="background:rgba(239,68,68,0.8); color:white; border:none; padding:6px 14px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer; min-height:36px;">
+                        🗑️ Kosongkan
+                    </button>
+                    @endif
                 </div>
 
-                <div class="p-4 min-h-[350px] max-h-[500px] overflow-y-auto">
+                {{-- Daftar Item --}}
+                <div style="padding:16px; min-height:200px; max-height:400px; overflow-y:auto;">
                     @if(empty($cart))
-                    <div class="text-center py-24 text-gray-300">
-                        <p class="text-6xl mb-4">📥</p>
-                        <p class="text-sm font-medium">Belum ada barang dipilih</p>
+                    <div style="text-align:center; padding:48px 20px; color:#d1d5db;">
+                        <p style="font-size:52px; margin:0 0 12px;">📥</p>
+                        <p style="font-size:16px; font-weight:600;">Belum ada barang dipilih</p>
                     </div>
                     @else
-                    <div class="space-y-3">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
                         @foreach($cart as $key => $item)
                         <div wire:key="cart-{{ $key }}"
-                            class="flex justify-between items-center border-b border-gray-50 pb-3">
-                            <div class="flex-1 min-w-0 pr-2">
-                                <p class="font-bold text-gray-800 text-sm truncate">{{ $item['name'] }}</p>
-                                <p class="text-xs text-gray-500">{{ $item['qty'] }} x {{ $item['unit_name'] }}</p>
+                            style="display:flex; align-items:center; gap:10px; padding-bottom:12px; border-bottom:1px solid #f3f4f6;">
+                            <div style="flex:1; min-width:0;">
+                                <p style="font-size:16px; font-weight:800; color:#111827; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    {{ $item['name'] }}
+                                </p>
+                                <p style="font-size:13px; color:#6b7280; margin:2px 0 0;">
+                                    {{ $item['unit_name'] }} · Rp {{ number_format($item['price'], 0, ',', '.') }}
+                                </p>
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <p class="font-bold text-blue-600 text-sm">Rp {{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}</p>
-                                <button wire:click="removeFromCart('{{ $key }}')"
-                                    class="text-red-300 hover:text-red-600 transition w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50">✕</button>
+                            {{-- Kontrol QTY --}}
+                            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                                <button wire:click="updateQty('{{ $key }}', -1)"
+                                    style="width:36px; height:36px; border-radius:50%; background:#fee2e2; border:none; color:#ef4444; font-size:20px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">−</button>
+                                <span style="font-size:18px; font-weight:900; color:#111827; min-width:24px; text-align:center;">{{ $item['qty'] }}</span>
+                                <button wire:click="updateQty('{{ $key }}', 1)"
+                                    style="width:36px; height:36px; border-radius:50%; background:#dcfce7; border:none; color:#16a34a; font-size:20px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">+</button>
+                            </div>
+                            <div style="text-align:right; flex-shrink:0;">
+                                <p style="font-size:16px; font-weight:900; color:#1d4ed8; margin:0;">
+                                    Rp {{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}
+                                </p>
                             </div>
                         </div>
                         @endforeach
@@ -163,119 +225,204 @@
                     @endif
                 </div>
 
-                <div class="bg-gray-50 p-5 border-t border-gray-200">
+                {{-- Footer Total & Bayar --}}
+                <div style="background:#f9fafb; padding:18px 20px; border-top:1px solid #e5e7eb;">
                     @if(session()->has('success') && $lastTransactionId)
-                    @php
-                    $trx = \App\Models\Transaction::find($lastTransactionId);
-                    $details = \App\Models\TransactionDetail::where('transaction_id', $lastTransactionId)->get();
-                    $pesan = "Halo kak, terima kasih sudah berbelanja.\n\n";
-                    $pesan .= "No. Invoice: *" . $trx->invoice_number . "*\n";
-                    $pesan .= "Tanggal: " . $trx->created_at->format('d/m/Y H:i') . "\n\n";
-                    $pesan .= "🛒 *RINCIAN BELANJA:*\n";
-                    $pesan .= "----------------------------------------\n";
-                    foreach ($details as $item) {
-                    $namaBarang = \App\Models\Product::find($item->product_id)->name ?? 'Barang';
-                    $namaSatuan = \App\Models\ProductUnit::find($item->product_unit_id)->unit_name ?? '';
-                    $pesan .= "▪️ " . $namaBarang . "\n";
-                    $pesan .= " " . $item->qty . " " . $namaSatuan . " x Rp " . number_format($item->price, 0, ',', '.') . " = *Rp " . number_format($item->subtotal, 0, ',', '.') . "*\n";
-                    }
-                    $pesan .= "----------------------------------------\n";
-                    $pesan .= "Total Belanja: *Rp " . number_format($trx->total_price, 0, ',', '.') . "*\n";
-                    $pesan .= "Bayar (" . $trx->payment_method . "): Rp " . number_format($trx->amount_paid, 0, ',', '.') . "\n";
-                    $pesan .= "Kembali: *Rp " . number_format($trx->change_amount, 0, ',', '.') . "*\n\n";
-                    $pesan .= "Semoga barangnya bermanfaat. Ditunggu kedatangannya kembali! 🙏";
-                    @endphp
-                    <div class="mb-5 space-y-2">
-                        <a href="{{ route('print.struk', $lastTransactionId) }}" target="_blank"
-                            class="w-full block text-center bg-yellow-400 text-yellow-900 font-black py-3 rounded-xl border-b-4 border-yellow-600 hover:bg-yellow-300 transition-all shadow-md animate-pulse text-sm">
-                            🖨️ CETAK STRUK FISIK
-                        </a>
-                    </div>
+                    <a href="{{ route('print.struk', $lastTransactionId) }}" target="_blank"
+                        style="display:block; text-align:center; background:#fbbf24; color:#78350f; font-weight:900; font-size:16px; padding:14px; border-radius:14px; text-decoration:none; margin-bottom:14px; border-bottom:4px solid #d97706; animation:pulse 1.5s infinite;">
+                        🖨️ CETAK STRUK SEKARANG
+                    </a>
                     @endif
 
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-sm font-bold text-gray-400 uppercase">Total</span>
-                        <span class="text-2xl font-black text-blue-600">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <span style="font-size:15px; font-weight:700; color:#6b7280; text-transform:uppercase;">Total</span>
+                        <span style="font-size:28px; font-weight:900; color:#1d4ed8;">Rp {{ number_format($total, 0, ',', '.') }}</span>
                     </div>
 
                     <button
                         wire:click="openCheckoutModal"
-                        wire:loading.attr="disabled"
                         @if(empty($cart)) disabled @endif
-                        class="w-full bg-green-500 text-white font-bold py-4 rounded-2xl hover:bg-green-600 shadow-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-                        SELESAIKAN BAYAR (F10)
+                        style="
+                            width: 100%;
+                            background: {{ empty($cart) ? '#d1d5db' : '#16a34a' }};
+                            color: {{ empty($cart) ? '#9ca3af' : 'white' }};
+                            border: none;
+                            padding: 18px;
+                            border-radius: 16px;
+                            font-size: 18px;
+                            font-weight: 900;
+                            cursor: {{ empty($cart) ? 'not-allowed' : 'pointer' }};
+                            box-shadow: {{ empty($cart) ? 'none' : '0 4px 16px rgba(22,163,74,0.35)' }};
+                            transition: all 0.2s;
+                            min-height: 58px;
+                            letter-spacing: 0.5px;
+                        ">
+                        💳 SELESAIKAN PEMBAYARAN (F10)
                     </button>
                 </div>
+
             </div>
         </div>
 
     </div>
-    {{-- ========== AKHIR GRID ========== --}}
 
+    {{-- Audio beep scan --}}
     <audio id="beep-success" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
     <script>
         window.addEventListener('audio-play', () => {
-            document.getElementById('beep-success').play();
+            document.getElementById('beep-success').play().catch(() => {});
         });
     </script>
 
     {{-- ========== MODAL CHECKOUT ========== --}}
     @if($showCheckoutModal)
-    <div class="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-lg overflow-hidden">
+    <div style="position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; display:flex; align-items:flex-end; justify-content:center; backdrop-filter:blur(4px);"
+        class="sm:items-center">
 
-            <div class="bg-blue-600 p-4 sm:p-5 text-white flex justify-between items-center">
-                <h2 class="text-lg sm:text-xl font-black tracking-wide">Penyelesaian Transaksi</h2>
-                <button wire:click="closeCheckoutModal" class="text-white hover:text-red-300 font-bold text-2xl w-8 h-8 flex items-center justify-center">&times;</button>
+        <div style="background:white; border-radius:24px 24px 0 0; width:100%; max-width:520px; overflow:hidden; max-height:92vh; display:flex; flex-direction:column;"
+            class="sm:rounded-3xl sm:max-h-[90vh]">
+
+            {{-- Header --}}
+            <div style="background:linear-gradient(135deg,#1e40af,#1d4ed8); padding:18px 20px; color:white; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                <h2 style="font-size:20px; font-weight:900; margin:0;">💳 Proses Pembayaran</h2>
+                <button wire:click="closeCheckoutModal"
+                    style="background:rgba(255,255,255,0.2); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:900;">
+                    ×
+                </button>
             </div>
 
-            <div class="p-4 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex justify-between items-center">
-                    <span class="text-gray-500 font-bold text-sm">TOTAL TAGIHAN</span>
-                    <span class="text-2xl sm:text-3xl font-black text-blue-600">Rp {{ number_format($total, 0, ',', '.') }}</span>
+            {{-- Body Scrollable --}}
+            <div style="flex:1; overflow-y:auto; padding:18px 20px;">
+
+                {{-- Total Tagihan --}}
+                <div style="background:#eff6ff; padding:18px; border-radius:16px; text-align:center; margin-bottom:18px; border:2px solid #bfdbfe;">
+                    <p style="font-size:13px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 6px;">Total Tagihan</p>
+                    <p style="font-size:36px; font-weight:900; color:#1d4ed8; margin:0;">
+                        Rp {{ number_format($total, 0, ',', '.') }}
+                    </p>
+                    @if($discountAmount > 0)
+                    <p style="font-size:14px; color:#16a34a; font-weight:700; margin:6px 0 0;">
+                        ✅ Hemat Rp {{ number_format($discountAmount, 0, ',', '.') }}
+                    </p>
+                    @endif
                 </div>
 
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Metode Pembayaran</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <label class="cursor-pointer">
-                            <input type="radio" wire:model.live="paymentMethod" value="Cash" class="peer sr-only">
-                            <div class="p-3 text-center rounded-lg border-2 border-gray-200 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-bold transition-all text-sm">💵 Tunai</div>
+                {{-- Diskon --}}
+                <div style="background:#f9fafb; padding:14px; border-radius:14px; margin-bottom:16px; border:1.5px solid #e5e7eb;">
+                    <p style="font-size:14px; font-weight:800; color:#374151; margin:0 0 10px; text-transform:uppercase;">🏷️ Diskon (Opsional)</p>
+                    <div style="display:flex; gap:8px; margin-bottom:10px;">
+                        <button wire:click="$set('discountType', 'nominal')"
+                            style="flex:1; padding:10px; border-radius:10px; border:2.5px solid {{ $discountType === 'nominal' ? '#1d4ed8' : '#e5e7eb' }}; background:{{ $discountType === 'nominal' ? '#eff6ff' : 'white' }}; color:{{ $discountType === 'nominal' ? '#1d4ed8' : '#6b7280' }}; font-size:15px; font-weight:800; cursor:pointer; min-height:48px;">
+                            Rp Nominal
+                        </button>
+                        <button wire:click="$set('discountType', 'persen')"
+                            style="flex:1; padding:10px; border-radius:10px; border:2.5px solid {{ $discountType === 'persen' ? '#1d4ed8' : '#e5e7eb' }}; background:{{ $discountType === 'persen' ? '#eff6ff' : 'white' }}; color:{{ $discountType === 'persen' ? '#1d4ed8' : '#6b7280' }}; font-size:15px; font-weight:800; cursor:pointer; min-height:48px;">
+                            % Persen
+                        </button>
+                    </div>
+                    <input type="number" inputmode="numeric"
+                        wire:model.live.debounce.300ms="discountValue"
+                        placeholder="{{ $discountType === 'persen' ? 'Contoh: 10 (untuk 10%)' : 'Contoh: 5000' }}"
+                        style="width:100%; padding:12px 14px; border:2px solid #e5e7eb; border-radius:12px; font-size:17px; font-weight:700; outline:none; box-sizing:border-box; min-height:52px;">
+                </div>
+
+                {{-- Metode Pembayaran --}}
+                <div style="margin-bottom:16px;">
+                    <p style="font-size:15px; font-weight:800; color:#374151; margin:0 0 10px; text-transform:uppercase;">Metode Bayar</p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <label style="cursor:pointer;">
+                            <input type="radio" wire:model.live="paymentMethod" value="Cash" style="display:none;">
+                            <div style="padding:14px; text-align:center; border-radius:14px; border:3px solid {{ $paymentMethod === 'Cash' ? '#16a34a' : '#e5e7eb' }}; background:{{ $paymentMethod === 'Cash' ? '#dcfce7' : 'white' }}; font-size:17px; font-weight:800; color:{{ $paymentMethod === 'Cash' ? '#15803d' : '#6b7280' }}; min-height:58px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                                💵 Tunai
+                            </div>
                         </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" wire:model.live="paymentMethod" value="Transfer" class="peer sr-only">
-                            <div class="p-3 text-center rounded-lg border-2 border-gray-200 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-bold transition-all text-sm">💳 Transfer/QRIS</div>
+                        <label style="cursor:pointer;">
+                            <input type="radio" wire:model.live="paymentMethod" value="Transfer" style="display:none;">
+                            <div style="padding:14px; text-align:center; border-radius:14px; border:3px solid {{ $paymentMethod === 'Transfer' ? '#1d4ed8' : '#e5e7eb' }}; background:{{ $paymentMethod === 'Transfer' ? '#eff6ff' : 'white' }}; font-size:17px; font-weight:800; color:{{ $paymentMethod === 'Transfer' ? '#1d4ed8' : '#6b7280' }}; min-height:58px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                                💳 Transfer
+                            </div>
                         </label>
                     </div>
                 </div>
 
                 @if($paymentMethod == 'Cash')
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Uang Diterima (Rp)</label>
-                    <input type="number" inputmode="numeric" wire:model.live.debounce.300ms="amountPaid"
-                        placeholder="Ketik nominal uang..."
-                        class="w-full p-4 text-xl font-bold text-gray-800 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all">
+                {{-- Input Uang Diterima --}}
+                <div style="margin-bottom:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <p style="font-size:15px; font-weight:800; color:#374151; margin:0; text-transform:uppercase;">Uang Diterima (Rp)</p>
+                        <button wire:click="resetAmountPaid"
+                            style="background:#fee2e2; color:#ef4444; border:none; padding:6px 12px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer; min-height:36px;">
+                            Reset
+                        </button>
+                    </div>
+
+                    {{-- Display Uang --}}
+                    <div style="background:#f0fdf4; border:2.5px solid #86efac; border-radius:14px; padding:14px 18px; text-align:right; margin-bottom:10px;">
+                        <p style="font-size:32px; font-weight:900; color:#15803d; margin:0;">
+                            Rp {{ $amountPaid ? number_format((float)$amountPaid, 0, ',', '.') : '0' }}
+                        </p>
+                    </div>
+
+                    {{-- Quick Nominal Buttons — BESAR untuk orang tua --}}
+                    <p style="font-size:13px; font-weight:800; color:#9ca3af; text-transform:uppercase; margin:0 0 8px;">Klik nominal uang:</p>
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:10px;">
+                        @foreach([1000, 2000, 5000, 10000, 20000, 50000] as $nom)
+                        <button wire:click="setAmountPaid({{ $nom }})"
+                            style="padding:12px 6px; background:white; border:2px solid #e5e7eb; border-radius:12px; font-size:15px; font-weight:900; color:#374151; cursor:pointer; transition:all 0.15s; min-height:52px; width:100%;"
+                            onmousedown="this.style.background='#1d4ed8';this.style.color='white';"
+                            onmouseup="this.style.background='white';this.style.color='#374151';"
+                            ontouchstart="this.style.background='#1d4ed8';this.style.color='white';"
+                            ontouchend="this.style.background='white';this.style.color='#374151';">
+                            +{{ number_format($nom, 0, ',', '.') }}
+                        </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Tombol UANG PAS --}}
+                    <button wire:click="setAmountPaid('pas')"
+                        style="width:100%; padding:14px; background:#1e40af; color:white; border:none; border-radius:14px; font-size:17px; font-weight:900; cursor:pointer; margin-bottom:12px; min-height:54px; letter-spacing:0.5px;">
+                        💯 UANG PAS (Total: Rp {{ number_format($total, 0, ',', '.') }})
+                    </button>
+
+                    {{-- Input Manual --}}
+                    <input type="number" inputmode="numeric"
+                        wire:model.live.debounce.300ms="amountPaid"
+                        placeholder="Atau ketik nominal manual..."
+                        style="width:100%; padding:12px 14px; border:2px solid #e5e7eb; border-radius:12px; font-size:17px; font-weight:700; outline:none; box-sizing:border-box; min-height:52px;">
+
                     @if(session()->has('error_payment'))
-                    <p class="text-red-500 text-xs font-bold mt-1">{{ session('error_payment') }}</p>
+                    <p style="color:#ef4444; font-size:15px; font-weight:800; margin:8px 0 0;">⚠️ {{ session('error_payment') }}</p>
                     @endif
                 </div>
 
-                <div class="flex justify-between items-center p-4 rounded-xl {{ $changeAmount < 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700' }}">
-                    <span class="font-bold">KEMBALIAN</span>
-                    <span class="text-xl sm:text-2xl font-black">
+                {{-- Kembalian --}}
+                <div style="padding:16px 18px; border-radius:14px; background:{{ $changeAmount < 0 ? '#fee2e2' : '#dcfce7' }}; border:2px solid {{ $changeAmount < 0 ? '#fca5a5' : '#86efac' }}; text-align:center;">
+                    <p style="font-size:13px; font-weight:800; color:{{ $changeAmount < 0 ? '#991b1b' : '#15803d' }}; text-transform:uppercase; margin:0 0 4px;">Kembalian</p>
+                    <p style="font-size:30px; font-weight:900; color:{{ $changeAmount < 0 ? '#ef4444' : '#16a34a' }}; margin:0;">
                         Rp {{ $changeAmount < 0 ? '0' : number_format($changeAmount, 0, ',', '.') }}
-                    </span>
+                    </p>
                 </div>
                 @endif
+
+                {{-- Catatan --}}
+                <div style="margin-top:14px;">
+                    <label style="font-size:14px; font-weight:800; color:#374151; display:block; margin-bottom:6px; text-transform:uppercase;">📝 Catatan (Opsional)</label>
+                    <input type="text" wire:model.live="customerNote"
+                        placeholder="Contoh: Pelanggan Bu Sari..."
+                        style="width:100%; padding:12px 14px; border:2px solid #e5e7eb; border-radius:12px; font-size:16px; outline:none; box-sizing:border-box; min-height:50px;">
+                </div>
+
             </div>
 
-            <div class="p-4 sm:p-5 border-t border-gray-100 bg-gray-50">
+            {{-- Footer Tombol Konfirmasi --}}
+            <div style="padding:16px 20px; border-top:2px solid #f3f4f6; background:#f9fafb; flex-shrink:0;">
                 <button wire:click="processPayment" wire:loading.attr="disabled"
-                    class="w-full bg-blue-600 text-white font-black py-4 rounded-xl hover:bg-blue-700 shadow-lg transition-all text-base sm:text-lg">
-                    <span wire:loading.remove>KONFIRMASI PEMBAYARAN</span>
-                    <span wire:loading>MEMPROSES...</span>
+                    style="width:100%; background:#16a34a; color:white; border:none; padding:18px; border-radius:16px; font-size:20px; font-weight:900; cursor:pointer; box-shadow:0 4px 20px rgba(22,163,74,0.4); min-height:62px; letter-spacing:0.5px;">
+                    <span wire:loading.remove wire:target="processPayment">✅ KONFIRMASI BAYAR</span>
+                    <span wire:loading wire:target="processPayment">⌛ Memproses...</span>
                 </button>
             </div>
+
         </div>
     </div>
     @endif
@@ -286,93 +433,130 @@
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
         @click.self="showMobileCart = false"
-        class="fixed inset-0 bg-black/50 z-40 lg:hidden flex items-end backdrop-blur-sm">
+        style="position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:150; display:flex; align-items:flex-end; backdrop-filter:blur(4px);"
+        class="lg:hidden">
 
-        <div
-            x-show="showMobileCart"
+        <div x-show="showMobileCart"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="translate-y-full"
             x-transition:enter-end="translate-y-0"
-            class="bg-white w-full rounded-t-3xl shadow-2xl max-h-[75vh] flex flex-col">
+            style="background:white; width:100%; border-radius:24px 24px 0 0; max-height:80vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 -8px 40px rgba(0,0,0,0.2);">
 
-            <div class="flex justify-between items-center p-4 border-b border-gray-100">
-                <div class="flex items-center gap-2">
-                    <span class="font-black text-gray-800">🛒 Keranjang</span>
-                    <span class="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ count($cart) }}</span>
+            {{-- Header Drawer --}}
+            <div style="padding:16px 18px; border-bottom:2px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:20px; font-weight:900; color:#111827;">🛒 Keranjang</span>
+                    <span style="background:#1d4ed8; color:white; font-size:14px; font-weight:900; padding:4px 10px; border-radius:20px;">{{ count($cart) }}</span>
                 </div>
-                <button @click="showMobileCart = false" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 font-bold">✕</button>
+                <div style="display:flex; gap:8px;">
+                    @if(!empty($cart))
+                    <button wire:click="clearCart" @click="showMobileCart = false"
+                        style="background:#fee2e2; color:#ef4444; border:none; padding:8px 14px; border-radius:10px; font-size:14px; font-weight:800; cursor:pointer; min-height:40px;">
+                        🗑️ Bersihkan
+                    </button>
+                    @endif
+                    <button @click="showMobileCart = false"
+                        style="background:#f3f4f6; border:none; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center;">
+                        ×
+                    </button>
+                </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-4">
+            {{-- Item List --}}
+            <div style="flex:1; overflow-y:auto; padding:14px 18px;">
                 @if(empty($cart))
-                <div class="text-center py-12 text-gray-300">
-                    <p class="text-5xl mb-3">📥</p>
-                    <p class="text-sm">Belum ada barang dipilih</p>
+                <div style="text-align:center; padding:48px 20px; color:#d1d5db;">
+                    <p style="font-size:48px; margin:0 0 10px;">📥</p>
+                    <p style="font-size:16px; font-weight:600;">Belum ada barang dipilih</p>
                 </div>
                 @else
-                <div class="space-y-3">
+                <div style="display:flex; flex-direction:column; gap:12px;">
                     @foreach($cart as $key => $item)
                     <div wire:key="mob-cart-{{ $key }}"
-                        class="flex justify-between items-center border-b border-gray-50 pb-3">
-                        <div class="flex-1 min-w-0 pr-2">
-                            <p class="font-bold text-gray-800 text-sm truncate">{{ $item['name'] }}</p>
-                            <p class="text-xs text-gray-500">{{ $item['qty'] }} x {{ $item['unit_name'] }}</p>
+                        style="display:flex; align-items:center; gap:10px; padding-bottom:12px; border-bottom:1px solid #f3f4f6;">
+                        <div style="flex:1; min-width:0;">
+                            <p style="font-size:17px; font-weight:800; color:#111827; margin:0;">{{ $item['name'] }}</p>
+                            <p style="font-size:14px; color:#6b7280; margin:2px 0 0;">{{ $item['unit_name'] }} · Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
                         </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <p class="font-bold text-blue-600 text-sm">Rp {{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}</p>
-                            <button wire:click="removeFromCart('{{ $key }}')"
-                                class="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition">✕</button>
+                        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                            <button wire:click="updateQty('{{ $key }}', -1)"
+                                style="width:40px; height:40px; border-radius:50%; background:#fee2e2; border:none; color:#ef4444; font-size:22px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">−</button>
+                            <span style="font-size:20px; font-weight:900; min-width:28px; text-align:center;">{{ $item['qty'] }}</span>
+                            <button wire:click="updateQty('{{ $key }}', 1)"
+                                style="width:40px; height:40px; border-radius:50%; background:#dcfce7; border:none; color:#16a34a; font-size:22px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">+</button>
                         </div>
+                        <p style="font-size:17px; font-weight:900; color:#1d4ed8; margin:0; flex-shrink:0;">
+                            Rp {{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}
+                        </p>
                     </div>
                     @endforeach
                 </div>
                 @endif
             </div>
 
-            <div class="p-4 border-t border-gray-100 bg-gray-50">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-sm font-bold text-gray-400 uppercase">Total</span>
-                    <span class="text-xl font-black text-blue-600">Rp {{ number_format($total, 0, ',', '.') }}</span>
+            {{-- Footer --}}
+            <div style="padding:16px 18px; border-top:2px solid #f3f4f6; background:#f9fafb; flex-shrink:0;">
+                @if(session()->has('success') && $lastTransactionId)
+                <a href="{{ route('print.struk', $lastTransactionId) }}" target="_blank"
+                    style="display:block; text-align:center; background:#fbbf24; color:#78350f; font-weight:900; font-size:16px; padding:14px; border-radius:14px; text-decoration:none; margin-bottom:12px;">
+                    🖨️ CETAK STRUK
+                </a>
+                @endif
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <span style="font-size:16px; font-weight:700; color:#6b7280; text-transform:uppercase;">Total</span>
+                    <span style="font-size:28px; font-weight:900; color:#1d4ed8;">Rp {{ number_format($total, 0, ',', '.') }}</span>
                 </div>
                 <button
                     wire:click="openCheckoutModal"
                     @if(empty($cart)) disabled @endif
                     @click="showMobileCart = false"
-                    class="w-full bg-green-500 disabled:bg-gray-300 text-white font-black py-4 rounded-xl shadow-lg transition-all">
-                    LANJUT BAYAR →
+                    style="width:100%; background:{{ empty($cart) ? '#d1d5db' : '#16a34a' }}; color:white; border:none; padding:18px; border-radius:16px; font-size:20px; font-weight:900; cursor:{{ empty($cart) ? 'not-allowed' : 'pointer' }}; min-height:60px; letter-spacing:0.5px;">
+                    💳 BAYAR SEKARANG
                 </button>
             </div>
         </div>
     </div>
 
-    {{-- ========== FLOATING BAR MOBILE ========== --}}
-    <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 z-30 lg:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-        <div class="flex items-center justify-between px-4 py-3 gap-3">
-            <button @click="showMobileCart = !showMobileCart"
-                class="flex items-center gap-3 flex-1 min-w-0">
-                <div class="relative shrink-0">
-                    <span class="text-2xl">🛒</span>
+    {{-- ========== FLOATING BAR BAWAH (MOBILE) ========== --}}
+    <div style="position:fixed; bottom:68px; left:0; right:0; z-index:100; padding:0 12px;" class="lg:hidden">
+        <button @click="showMobileCart = !showMobileCart"
+            style="
+                width: 100%;
+                background: {{ empty($cart) ? '#94a3b8' : 'linear-gradient(135deg, #1e40af, #1d4ed8)' }};
+                color: white;
+                border: none;
+                border-radius: 18px;
+                padding: 0 20px;
+                height: 62px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 4px 24px rgba(29,78,216,0.4);
+                cursor: pointer;
+                font-weight: 900;
+                touch-action: manipulation;
+            ">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:26px; position:relative;">
+                    🛒
                     @if(count($cart) > 0)
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
-                        {{ count($cart) > 9 ? '9+' : count($cart) }}
-                    </span>
+                    <span style="position:absolute; top:-6px; right:-6px; background:#ef4444; color:white; font-size:12px; font-weight:900; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;">{{ count($cart) }}</span>
                     @endif
+                </span>
+                <div style="text-align:left;">
+                    <p style="font-size:12px; opacity:0.8; margin:0;">{{ count($cart) }} item · Tap untuk lihat</p>
+                    <p style="font-size:20px; font-weight:900; margin:0;">
+                        Rp {{ number_format($total, 0, ',', '.') }}
+                    </p>
                 </div>
-                <div class="text-left min-w-0">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase leading-none">{{ count($cart) }} Item · Tap untuk lihat</p>
-                    <p class="text-lg font-black text-blue-600 leading-tight">Rp {{ number_format($total, 0, ',', '.') }}</p>
-                </div>
-            </button>
-            <button
-                wire:click="openCheckoutModal"
-                @if(empty($cart)) disabled @endif
-                class="bg-green-500 disabled:bg-gray-200 disabled:text-gray-400 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all active:scale-95 shrink-0 text-sm">
-                BAYAR
-            </button>
-        </div>
+            </div>
+            <span style="font-size:18px; font-weight:900;">
+                {{ empty($cart) ? '—' : 'BAYAR →' }}
+            </span>
+        </button>
     </div>
 
-    {{-- Spacer agar konten tidak tertutup floating bar --}}
-    <div class="h-20 lg:hidden"></div>
+    {{-- Spacer bottom --}}
+    <div style="height:80px;" class="lg:hidden"></div>
 
 </div>
