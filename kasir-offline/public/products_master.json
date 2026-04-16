@@ -16,5 +16,1607 @@
         "price": 1500,
         "stock": 240,
         "note": ""
+    },
+    {
+        "id": 3,
+        "barcode": null,
+        "category": "-",
+        "name": "Energen Coklat",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 4,
+        "barcode": null,
+        "category": "-",
+        "name": "Teh",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 5,
+        "barcode": null,
+        "category": "-",
+        "name": "Coki-coki",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 6,
+        "barcode": null,
+        "category": "-",
+        "name": "POCARI SWEAT 500 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 7,
+        "barcode": null,
+        "category": "-",
+        "name": "SPRITE 390 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 8,
+        "barcode": null,
+        "category": "-",
+        "name": "FITRI BTL 400 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 9,
+        "barcode": null,
+        "category": "-",
+        "name": "DUOSUS COKLAT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 10,
+        "barcode": null,
+        "category": "-",
+        "name": "GERY SALUT WAFER COKLAT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 11,
+        "barcode": null,
+        "category": "-",
+        "name": "SUPERSTAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 12,
+        "barcode": null,
+        "category": "-",
+        "name": "NABATI PINK LAVA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 13,
+        "barcode": null,
+        "category": "-",
+        "name": "NABATI KEJU",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 14,
+        "barcode": null,
+        "category": "-",
+        "name": "GERY MALKIST SALUT COKLAT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 15,
+        "barcode": null,
+        "category": "-",
+        "name": "GERY MALKIST KEJU RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 16,
+        "barcode": null,
+        "category": "-",
+        "name": "MARI REGAL 250 GR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 17,
+        "barcode": null,
+        "category": "-",
+        "name": "GANGSAR 210G (BESAR)",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 18,
+        "barcode": null,
+        "category": "-",
+        "name": "BABOL SAK BIRU ANEKA BUAH",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 19,
+        "barcode": null,
+        "category": "-",
+        "name": "GERY SEREAL BANTAL COKLAT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 20,
+        "barcode": null,
+        "category": "-",
+        "name": "KINO CANDY MANGGA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 21,
+        "barcode": null,
+        "category": "-",
+        "name": "KECAP MANIS 60 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 22,
+        "barcode": null,
+        "category": "-",
+        "name": "KIRANTI JUICE LYCHEE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 23,
+        "barcode": null,
+        "category": "-",
+        "name": "KIRANTI JUICE BERRY",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 24,
+        "barcode": null,
+        "category": "-",
+        "name": "KIRANTI DATANG BULAN",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 25,
+        "barcode": null,
+        "category": "-",
+        "name": "ROYCO AYAM RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 26,
+        "barcode": null,
+        "category": "-",
+        "name": "ROYCO SAPI RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 27,
+        "barcode": null,
+        "category": "-",
+        "name": "KIRANTI JUICE ORANGE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 28,
+        "barcode": null,
+        "category": "-",
+        "name": "KISPRAY BLUIS 280 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 29,
+        "barcode": null,
+        "category": "-",
+        "name": "KISPRAY SEGERIS 280 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 30,
+        "barcode": null,
+        "category": "-",
+        "name": "KISPRAY VIOLET 280 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 31,
+        "barcode": null,
+        "category": "-",
+        "name": "SOKLIN LIQ B HIJAB COOL",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 32,
+        "barcode": null,
+        "category": "-",
+        "name": "SAMPO LIFEBUOY MENTOL RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 33,
+        "barcode": null,
+        "category": "-",
+        "name": "SUNSILK COND SILKY SMOOTH",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 34,
+        "barcode": null,
+        "category": "-",
+        "name": "SAMPO LIFEBUOY BIRU RTG NEW",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 35,
+        "barcode": null,
+        "category": "-",
+        "name": "WIPOL REFILL 5000",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 36,
+        "barcode": null,
+        "category": "-",
+        "name": "KISPRAY SAPPHIRE REFF 200",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 37,
+        "barcode": null,
+        "category": "-",
+        "name": "KISPRAY FINE GOLD 280 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 38,
+        "barcode": null,
+        "category": "-",
+        "name": "CIKI JAGUAR 2000-AN",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 39,
+        "barcode": null,
+        "category": "-",
+        "name": "MILK LIFE BLUEBERRY",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 40,
+        "barcode": null,
+        "category": "-",
+        "name": "MILK LIFE MANGO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 41,
+        "barcode": null,
+        "category": "-",
+        "name": "TEH PUCUK HARUM 350 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 42,
+        "barcode": null,
+        "category": "-",
+        "name": "CIMORY YOGURT STROBERRY",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 43,
+        "barcode": null,
+        "category": "-",
+        "name": "INDOMILK KIDS COKLAT UHT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 44,
+        "barcode": null,
+        "category": "-",
+        "name": "HA HA MIE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 45,
+        "barcode": null,
+        "category": "-",
+        "name": "KREZO MIE ALL RASA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 46,
+        "barcode": null,
+        "category": "-",
+        "name": "CIMORY BLUEBERRY 125 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 47,
+        "barcode": null,
+        "category": "-",
+        "name": "GORIORIO COKLAT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 48,
+        "barcode": null,
+        "category": "-",
+        "name": "SUKI 20GR RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 49,
+        "barcode": null,
+        "category": "-",
+        "name": "JOLLY REFIL 250-2",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 50,
+        "barcode": null,
+        "category": "-",
+        "name": "KECAP EXTRA 300 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 51,
+        "barcode": null,
+        "category": "-",
+        "name": "MAMYPOKO L 1 RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 52,
+        "barcode": null,
+        "category": "-",
+        "name": "CENGKEH 6000-AN",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 53,
+        "barcode": null,
+        "category": "-",
+        "name": "CENGKEH 1000-AN",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 54,
+        "barcode": null,
+        "category": "-",
+        "name": "SEK PAGUPON",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 55,
+        "barcode": null,
+        "category": "-",
+        "name": "MITU BABY BIRU",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 56,
+        "barcode": null,
+        "category": "-",
+        "name": "MITU BABY BELI 1 DPT 1",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 57,
+        "barcode": null,
+        "category": "-",
+        "name": "SAMBAL ULEG SAMBAL KEMIRI",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 58,
+        "barcode": null,
+        "category": "-",
+        "name": "AJINOMOTO 1000-AN",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 59,
+        "barcode": null,
+        "category": "-",
+        "name": "KOBE PISANG GORENG 75 GR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 60,
+        "barcode": null,
+        "category": "-",
+        "name": "DAPUR KITA T BAKWAN RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 61,
+        "barcode": null,
+        "category": "-",
+        "name": "MENTEGA PALMIA 200 GR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 62,
+        "barcode": null,
+        "category": "-",
+        "name": "BANGKOK 135 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 63,
+        "barcode": null,
+        "category": "-",
+        "name": "INDOFOOD PEDAS MNS 135 ML",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 64,
+        "barcode": null,
+        "category": "-",
+        "name": "SUMBO CAIR RAJAWALI",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 65,
+        "barcode": null,
+        "category": "-",
+        "name": "RAWON PEDAS MERCON",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 66,
+        "barcode": null,
+        "category": "-",
+        "name": "AMANDA POTONG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 67,
+        "barcode": null,
+        "category": "-",
+        "name": "SARIMI GELAS KARE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 68,
+        "barcode": null,
+        "category": "-",
+        "name": "VANILI CEPUK",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 69,
+        "barcode": null,
+        "category": "-",
+        "name": "PEPSODENT 75G",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 70,
+        "barcode": null,
+        "category": "-",
+        "name": "NYEMEK JOGJA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 71,
+        "barcode": null,
+        "category": "-",
+        "name": "CHARM NIGHT 29CM 5P",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 72,
+        "barcode": null,
+        "category": "-",
+        "name": "CHARM NIGHT 29CM 9P",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 73,
+        "barcode": null,
+        "category": "-",
+        "name": "BAGUS TOILET ISI 5",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 74,
+        "barcode": null,
+        "category": "-",
+        "name": "LAURIER D. SIRIH 22CM 5P",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 75,
+        "barcode": null,
+        "category": "-",
+        "name": "SABUN LIFEBUOY BIRU (4X100G)",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 76,
+        "barcode": null,
+        "category": "-",
+        "name": "LIFEBUOY MERAH (4X110G)",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 77,
+        "barcode": null,
+        "category": "-",
+        "name": "LUX ORCHID BANDED 3X110G",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 78,
+        "barcode": null,
+        "category": "-",
+        "name": "LUX VELVET BANDED (3X100G)",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 79,
+        "barcode": null,
+        "category": "-",
+        "name": "NUVO ALL 80G",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 80,
+        "barcode": null,
+        "category": "-",
+        "name": "YA 120-GR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 81,
+        "barcode": null,
+        "category": "-",
+        "name": "JASJUS JERUK",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 82,
+        "barcode": null,
+        "category": "-",
+        "name": "JASJUS SIRSAK",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 83,
+        "barcode": null,
+        "category": "-",
+        "name": "JASJUS JERUK PERAS",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 84,
+        "barcode": null,
+        "category": "-",
+        "name": "JASJUS MANGGA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 85,
+        "barcode": null,
+        "category": "-",
+        "name": "JASJUS STROWBERRY",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 86,
+        "barcode": null,
+        "category": "-",
+        "name": "JASJUS MELON",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 87,
+        "barcode": null,
+        "category": "-",
+        "name": "MILO RENT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 88,
+        "barcode": null,
+        "category": "-",
+        "name": "TOP AVOCADO RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 89,
+        "barcode": null,
+        "category": "-",
+        "name": "ENERGEN KACANG IJO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 90,
+        "barcode": null,
+        "category": "-",
+        "name": "YA SUSU 28G",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 91,
+        "barcode": null,
+        "category": "-",
+        "name": "YA 60 GR RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 92,
+        "barcode": null,
+        "category": "-",
+        "name": "BENDERA SASET PUTIH RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 93,
+        "barcode": null,
+        "category": "-",
+        "name": "BENDERA COKLAT RTG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 94,
+        "barcode": null,
+        "category": "-",
+        "name": "ZEN SANDALWOOD MERAH 70G",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 95,
+        "barcode": null,
+        "category": "-",
+        "name": "GIV ALL WARNA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 96,
+        "barcode": null,
+        "category": "-",
+        "name": "SHINZUI BESAR ALL",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 97,
+        "barcode": null,
+        "category": "-",
+        "name": "TIGA SAPI 500G",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 98,
+        "barcode": null,
+        "category": "-",
+        "name": "CARNATION BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 99,
+        "barcode": null,
+        "category": "-",
+        "name": "GARAM HALUS DUA SEGITIGA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 100,
+        "barcode": null,
+        "category": "-",
+        "name": "EKOMIE ISI 6",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 101,
+        "barcode": null,
+        "category": "-",
+        "name": "SOKLIN ALL 5000-AN UNGU",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 102,
+        "barcode": null,
+        "category": "-",
+        "name": "PROMAG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 103,
+        "barcode": null,
+        "category": "-",
+        "name": "BODREXIN 20 TABLET",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 104,
+        "barcode": null,
+        "category": "-",
+        "name": "KOYO CABE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 105,
+        "barcode": null,
+        "category": "-",
+        "name": "BATERAI ABC BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 106,
+        "barcode": null,
+        "category": "-",
+        "name": "GULA SETENGAH KILO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 107,
+        "barcode": null,
+        "category": "-",
+        "name": "SURYA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 108,
+        "barcode": null,
+        "category": "-",
+        "name": "SUKUN",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 109,
+        "barcode": null,
+        "category": "-",
+        "name": "TALIROSO 16",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 110,
+        "barcode": null,
+        "category": "-",
+        "name": "TALIROSO 12",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 111,
+        "barcode": null,
+        "category": "-",
+        "name": "ANDALAN BARU KUNING",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 112,
+        "barcode": null,
+        "category": "-",
+        "name": "ANDALAN HITAM (FILTER)",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 113,
+        "barcode": null,
+        "category": "-",
+        "name": "RAPTOR KRETEK",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 114,
+        "barcode": null,
+        "category": "-",
+        "name": "RAPTOR FILTER",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 115,
+        "barcode": null,
+        "category": "-",
+        "name": "TELUR SETENGAH KILO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 116,
+        "barcode": null,
+        "category": "-",
+        "name": "TELUR SEKILO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 117,
+        "barcode": null,
+        "category": "-",
+        "name": "TERIGU",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 118,
+        "barcode": null,
+        "category": "-",
+        "name": "TERIGU 1 KILO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 119,
+        "barcode": null,
+        "category": "-",
+        "name": "DJARUM SUPER",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 120,
+        "barcode": null,
+        "category": "-",
+        "name": "DJARUM SUPER KRETEK",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 121,
+        "barcode": null,
+        "category": "-",
+        "name": "DJARUM 76 APEL",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 122,
+        "barcode": null,
+        "category": "-",
+        "name": "KIKO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 123,
+        "barcode": null,
+        "category": "-",
+        "name": "POP MIE BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 124,
+        "barcode": null,
+        "category": "-",
+        "name": "POP MIE KECIL",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 125,
+        "barcode": null,
+        "category": "-",
+        "name": "ROMA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 126,
+        "barcode": null,
+        "category": "-",
+        "name": "NABATI BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 127,
+        "barcode": null,
+        "category": "-",
+        "name": "NABATI KECIL",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 128,
+        "barcode": null,
+        "category": "-",
+        "name": "WAFELLO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 129,
+        "barcode": null,
+        "category": "-",
+        "name": "SALONPAS",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 130,
+        "barcode": null,
+        "category": "-",
+        "name": "TOLAK ANGIN",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 131,
+        "barcode": null,
+        "category": "-",
+        "name": "ANTANGIN",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 132,
+        "barcode": null,
+        "category": "-",
+        "name": "AQUA BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 133,
+        "barcode": null,
+        "category": "-",
+        "name": "AQUVIVA BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 134,
+        "barcode": null,
+        "category": "-",
+        "name": "ROTI SISIR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 135,
+        "barcode": null,
+        "category": "-",
+        "name": "AOKA KOTAK",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 136,
+        "barcode": null,
+        "category": "-",
+        "name": "TAIKO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 137,
+        "barcode": null,
+        "category": "-",
+        "name": "MODIS",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 138,
+        "barcode": null,
+        "category": "-",
+        "name": "WARUNG KOPI JAMBU",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 139,
+        "barcode": null,
+        "category": "-",
+        "name": "WARUNG KOPI",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 140,
+        "barcode": null,
+        "category": "-",
+        "name": "SHOOT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 141,
+        "barcode": null,
+        "category": "-",
+        "name": "DJARUM SUPER ESPRESSO GOLD",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 142,
+        "barcode": null,
+        "category": "-",
+        "name": "SAMPOERNA HITAM",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 143,
+        "barcode": null,
+        "category": "-",
+        "name": "KAPAL API",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 144,
+        "barcode": null,
+        "category": "-",
+        "name": "TOP COFFE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 145,
+        "barcode": null,
+        "category": "-",
+        "name": "DANCOW",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 146,
+        "barcode": null,
+        "category": "-",
+        "name": "GOOD DAY CAPPUCINO",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 147,
+        "barcode": null,
+        "category": "-",
+        "name": "SIDOMUNCUL SUSU JAHE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 148,
+        "barcode": null,
+        "category": "-",
+        "name": "BONCABE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 149,
+        "barcode": null,
+        "category": "-",
+        "name": "SAORI",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 150,
+        "barcode": null,
+        "category": "-",
+        "name": "COCOMAXI",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 151,
+        "barcode": null,
+        "category": "-",
+        "name": "SUNSILK KONDISIONER",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 152,
+        "barcode": null,
+        "category": "-",
+        "name": "PANTENE KONDISIONER",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 153,
+        "barcode": null,
+        "category": "-",
+        "name": "SCOTH BRITE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 154,
+        "barcode": null,
+        "category": "-",
+        "name": "NUTRIJELL",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 155,
+        "barcode": null,
+        "category": "-",
+        "name": "BIHUN JAGUNG PADAMU",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 156,
+        "barcode": null,
+        "category": "-",
+        "name": "MINYAK KITA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 157,
+        "barcode": null,
+        "category": "-",
+        "name": "RIZKI",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 158,
+        "barcode": null,
+        "category": "-",
+        "name": "TEPUNG BERAS PUTIH",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 159,
+        "barcode": null,
+        "category": "-",
+        "name": "DRINK BENG BENG",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 160,
+        "barcode": null,
+        "category": "-",
+        "name": "WHITE KOFFIE",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 161,
+        "barcode": null,
+        "category": "-",
+        "name": "ISOPLUS",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 162,
+        "barcode": null,
+        "category": "-",
+        "name": "BEAR BRAND",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 163,
+        "barcode": null,
+        "category": "-",
+        "name": "LARUTAN CAP KAKI TIGA",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 164,
+        "barcode": null,
+        "category": "-",
+        "name": "YOU C1000",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 165,
+        "barcode": null,
+        "category": "-",
+        "name": "HEMAVITON",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 166,
+        "barcode": null,
+        "category": "-",
+        "name": "AQUA GALON",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 167,
+        "barcode": null,
+        "category": "-",
+        "name": "CLUB",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 168,
+        "barcode": null,
+        "category": "-",
+        "name": "BATERAI ABC JAM",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 169,
+        "barcode": null,
+        "category": "-",
+        "name": "BATERAI ABC REMOT",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 170,
+        "barcode": null,
+        "category": "-",
+        "name": "DOWNY",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 171,
+        "barcode": null,
+        "category": "-",
+        "name": "WINGS 145 GR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 172,
+        "barcode": null,
+        "category": "-",
+        "name": "JAZZ SOFTENER BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 173,
+        "barcode": null,
+        "category": "-",
+        "name": "MAMA LIME GREEN TEA BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 174,
+        "barcode": null,
+        "category": "-",
+        "name": "MAMALIME CHARCOAL BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 175,
+        "barcode": null,
+        "category": "-",
+        "name": "EKONOMI BESAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 176,
+        "barcode": null,
+        "category": "-",
+        "name": "PEPSODENT SIKAT GIGI 5 STAR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 177,
+        "barcode": null,
+        "category": "-",
+        "name": "PEPSODENT SIKAT GIGI SUPER MURAH",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 178,
+        "barcode": null,
+        "category": "-",
+        "name": "NUVO SABUN CAIR 400 GR",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 179,
+        "barcode": null,
+        "category": "-",
+        "name": "DOWNY BESAR 1 PAK (6)",
+        "price": 0,
+        "stock": 0,
+        "note": ""
+    },
+    {
+        "id": 180,
+        "barcode": null,
+        "category": "-",
+        "name": "DOWNY BESAR MERAH 1 PAK (7)",
+        "price": 0,
+        "stock": 0,
+        "note": ""
     }
 ]
