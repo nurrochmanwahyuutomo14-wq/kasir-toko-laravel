@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "barcode": "123456789",
+        "category": "Umum",
+        "name": "Kopi Kapal Api 20g",
+        "price": 1500,
+        "stock": 240,
+        "note": ""
+    },
+    {
+        "id": 2,
+        "barcode": "123456789",
+        "category": "Umum",
+        "name": "Kopi Kapal Api 20g",
+        "price": 1500,
+        "stock": 240,
+        "note": ""
+    }
+]

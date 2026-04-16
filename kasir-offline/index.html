@@ -109,11 +109,15 @@
 
   <!-- VIEW: GUDANG BARANG -->
   <div id="view-barang" class="view-container pt-20">
-    <div class="flex justify-between items-center bg-white p-5 rounded-[20px] shadow-sm mb-4">
-      <h2 class="text-xl font-black text-gray-800">📦 Master Barang</h2>
-      <button onclick="MainApp.openAddProduct()" class="bg-blue-600 text-white font-black px-4 py-2 rounded-[14px] text-sm shadow-md hover:bg-blue-700 active:scale-95 transition-all">+ BARANG</button>
+    <div class="flex justify-between items-center bg-white p-5 rounded-[20px] shadow-sm mb-4 border border-gray-100">
+      <div class="flex items-center gap-3">
+        <h2 class="text-xl font-black text-gray-800">📦 Master Barang</h2>
+        <button onclick="MainApp.syncMasterData()" class="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full font-bold border border-blue-100 active:scale-90 transition-all">🔄 Sync</button>
+      </div>
+      <button onclick="MainApp.openAddProduct()" class="bg-blue-600 text-white font-black px-4 py-2 rounded-[14px] text-sm shadow-md hover:bg-blue-700 active:scale-95 transition-all text-xs">+ BARANG</button>
     </div>
-    <div id="product-list" class="space-y-3"></div>
+    
+    <div id="product-list" class="space-y-3 relative pb-10"></div>
   </div>
 
   <!-- VIEW: BUKU BON -->

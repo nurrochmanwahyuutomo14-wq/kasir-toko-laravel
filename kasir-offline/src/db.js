@@ -21,7 +21,7 @@ export async function seedInitialData() {
     
     try {
       // Mencoba mengambil data dari file JSON hasil ekspor Laravel
-      const response = await fetch('./products_master.json');
+      const response = await fetch('products_master.json');
       if (response.ok) {
         const masterData = await response.json();
         console.log(`Menemukan ${masterData.length} produk di master data. Mengimpor...`);
@@ -42,4 +42,24 @@ export async function seedInitialData() {
       { barcode: '444444', category: 'Umum', name: 'Rokok Surya 12', price: 24000, stock: 20, note: 'Rak Kasir (Dummy)' }
     ]);
   }
+}
+
+export async function forceSyncMaster() {
+    console.log("Memulai sinkronisasi paksa master data...");
+    
+    try {
+        const response = await fetch('products_master.json');
+        if (response.ok) {
+            const masterData = await response.json();
+            if (masterData.length > 0) {
+                await db.products.clear();
+                await db.products.bulkAdd(masterData);
+                console.log("✅ Sinkronisasi paksa berhasil.");
+                return true;
+            }
+        }
+    } catch (error) {
+        console.error("Gagal sinkronisasi paksa:", error);
+    }
+    return false;
 }

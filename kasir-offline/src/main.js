@@ -1,4 +1,4 @@
-import { db, seedInitialData } from './db.js';
+import { db, seedInitialData, forceSyncMaster } from './db.js';
 
 let cart = [];
 
@@ -258,6 +258,19 @@ const MainApp = {
      } else {
         document.getElementById('scanner-container').style.display = 'none';
      }
+  },
+
+  async syncMasterData() {
+    if(confirm('Sinkronisasi akan menghapus data stok lokal Anda dan menggantinya dengan data master dari server. Lanjutkan?')) {
+        const success = await forceSyncMaster();
+        if(success) {
+            alert('✅ Sinkronisasi master data berhasil!');
+            this.loadProducts();
+            this.loadKasirProducts();
+        } else {
+            alert('❌ Gagal sinkronisasi. Pastikan file master data tersedia.');
+        }
+    }
   },
 
   // ==========================
