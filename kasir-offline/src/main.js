@@ -167,97 +167,153 @@ const MainApp = {
     const details = await db.transaction_details.where({transaction_id: id}).toArray();
     const date = new Date(t.created_at).toLocaleString('id-ID');
     
-    let html = `
-      <div style="text-align: center; margin-bottom: 5px;">
-        <h2 style="margin: 0;">TOKOKU (KASIR)</h2>
-        <p style="margin: 5px 0;">Nota: ${t.invoice_number}</p>
-        <p style="margin: 0;">${date}</p>
-      </div>
-      <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
-      <table style="width: 100%; font-size: 10px;">
-    `;
+    // Format struk sebagai teks sederhana (kompatibel dengan Android)
+    let receipt = "================================\n";
+    receipt += "         TOKOKU KASIR\n";
+    receipt += "================================\n";
+    receipt += `Nota   : ${t.invoice_number}\n`;
+    receipt += `Waktu  : ${date}\n`;
+    receipt += "--------------------------------\n";
     
     details.forEach(d => {
-      html += `
-        <tr>
-          <td colspan="2">${d.product_name}</td>
-        </tr>
-        <tr>
-          <td>${d.qty || 1} x Rp ${(d.price || 0).toLocaleString('id-ID')}</td>
-          <td style="text-align: right;">Rp ${( (d.qty || 1) * (d.price || 0) ).toLocaleString('id-ID')}</td>
-        </tr>
-      `;
+      const qty = d.qty || 1;
+      const price = d.price || 0;
+      const subtotal = qty * price;
+      receipt += `${d.product_name}\n`;
+      receipt += `  ${qty} x Rp ${price.toLocaleString('id-ID')} = Rp ${subtotal.toLocaleString('id-ID')}\n`;
     });
     
-    html += `
-      </table>
-      <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
-      <table style="width: 100%; font-weight: bold;">
-        <tr><td>TOTAL</td><td style="text-align: right;">Rp ${t.total_price.toLocaleString('id-ID')}</td></tr>
-        <tr><td>BAYAR</td><td style="text-align: right;">Rp ${t.amount_paid.toLocaleString('id-ID')}</td></tr>
-        <tr><td>KEMBALI</td><td style="text-align: right;">Rp ${t.change_amount.toLocaleString('id-ID')}</td></tr>
-      </table>
-      <div style="text-align: center; margin-top: 10px;">
-        <p>Terima Kasih!</p>
-      </div>
-    `;
+    receipt += "--------------------------------\n";
+    receipt += `TOTAL   : Rp ${t.total_price.toLocaleString('id-ID')}\n`;
+    receipt += `BAYAR   : Rp ${t.amount_paid.toLocaleString('id-ID')}\n`;
+    receipt += `KEMBALI : Rp ${t.change_amount.toLocaleString('id-ID')}\n`;
+    receipt += "================================\n";
+    receipt += "        Terima Kasih!\n";
+    receipt += "================================\n";
 
-    const printSection = document.getElementById('print-section');
-    printSection.innerHTML = html;
-    printSection.style.display = 'block';
-    window.print();
-    printSection.style.display = 'none';
+    // Gunakan Web Share API (bisa share via WhatsApp, Bluetooth, dll.)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Nota ${t.invoice_number}`,
+          text: receipt
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          // Fallback: tampilkan di alert
+          alert(receipt);
+        }
+      }
+    } else {
+      // Fallback: tampilkan di alert untuk bisa copy-paste
+      alert(receipt);
+    }
   },
 
   async exportToCSV() {
     const trxs = await db.transactions.toArray();
-    let csv = "ID,Tanggal,Invoice,Total,Metode\n";
+    trxs.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    
+    const BOM = '\uFEFF'; // BOM untuk encoding UTF-8 agar terbaca di Excel
+    let csv = BOM + 'ID,Tanggal,Jam,Invoice,Total,Bayar,Kembali,Metode\n';
     trxs.forEach(t => {
-       csv += `${t.id},"${t.created_at}",${t.invoice_number},${t.total_price},${t.payment_method}\n`;
+      const d = new Date(t.created_at);
+      const tgl = d.toLocaleDateString('id-ID');
+      const jam = d.toLocaleTimeString('id-ID');
+      csv += `${t.id},"${tgl}","${jam}","${t.invoice_number}",${t.total_price},${t.amount_paid || 0},${t.change_amount || 0},${t.payment_method}\n`;
     });
 
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Laporan_Kasir_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Gunakan Data URI - kompatibel dengan Android WebView
+    const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    
+    // Coba Web Share API dulu (Android native share sheet)
+    if (navigator.share) {
+      try {
+        // Share sebagai teks (karena file share butuh async blob)
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const file = new File([blob], `Laporan_Kasir_${new Date().toISOString().split('T')[0]}.csv`, { type: 'text/csv' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'Laporan Kasir Offline' });
+          return;
+        }
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        // Jika gagal share file, fallback ke link download
+      }
+    }
+
+    // Fallback: Buat link download dengan data URI
+    try {
+      const link = document.createElement('a');
+      link.href = dataUri;
+      link.download = `Laporan_Kasir_${new Date().toISOString().split('T')[0]}.csv`;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => document.body.removeChild(link), 1000);
+    } catch(e) {
+      alert(`Rekap tidak bisa diunduh otomatis di perangkat ini.\n\nTotalnya: ${trxs.length} transaksi.`);
+    }
   },
 
   // ==========================
-  // SCANNER LOGIC
+  // SCANNER LOGIC (Android-Compatible)
   // ==========================
-  startScanner(target) {
+  async startScanner(target) {
+     // Cek dan minta izin kamera secara eksplisit dulu
+     try {
+       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+       stream.getTracks().forEach(t => t.stop()); // Hentikan stream percobaan
+     } catch(permErr) {
+       alert('Akses kamera ditolak. Harap izinkan kamera di Pengaturan Aplikasi Android Anda, lalu buka ulang aplikasinya.');
+       return;
+     }
+
      document.getElementById('scanner-container').style.display = 'flex';
-     this.scanner = new Html5Qrcode("reader");
-     const config = { fps: 10, qrbox: { width: 250, height: 250 } };
      
-     this.scanner.start({ facingMode: "environment" }, config, (decodedText) => {
-        this.stopScanner();
-        if(target === 'kasir') {
-           document.getElementById('kasir-search').value = decodedText;
-           this.loadKasirProducts(decodedText);
-        } else if(target === 'product') {
-           document.getElementById('prod-barcode').value = decodedText;
-        }
-     }).catch(err => {
-        alert("Gagal membuka kamera: " + err);
-        this.stopScanner();
+     if (this.scanner) {
+       try { await this.scanner.stop(); } catch(e) {}
+     }
+     
+     this.scanner = new Html5Qrcode('reader');
+     const config = { 
+       fps: 10, 
+       qrbox: { width: 250, height: 250 },
+       aspectRatio: 1.0,
+       showTorchButtonIfSupported: true
+     };
+     
+     this.scanner.start(
+       { facingMode: 'environment' }, 
+       config, 
+       (decodedText) => {
+          this.stopScanner();
+          if(target === 'kasir') {
+             // Isi otomatis ke search dan filter
+             const searchInput = document.getElementById('kasir-search');
+             if(searchInput) searchInput.value = decodedText;
+             this.loadKasirProducts(decodedText);
+          } else if(target === 'product') {
+             const barcodeInput = document.getElementById('prod-barcode');
+             if(barcodeInput) barcodeInput.value = decodedText;
+          }
+       },
+       (errorMessage) => { /* abaikan error frame */ }
+     ).catch(err => {
+        alert('Gagal membuka kamera: ' + err);
+        document.getElementById('scanner-container').style.display = 'none';
      });
   },
 
-  stopScanner() {
+  async stopScanner() {
      if(this.scanner) {
-        this.scanner.stop().then(() => {
-           document.getElementById('scanner-container').style.display = 'none';
-        }).catch(() => {
-           document.getElementById('scanner-container').style.display = 'none';
-        });
-     } else {
-        document.getElementById('scanner-container').style.display = 'none';
+        try {
+          await this.scanner.stop();
+          await this.scanner.clear();
+        } catch(e) {}
+        this.scanner = null;
      }
+     document.getElementById('scanner-container').style.display = 'none';
   },
 
   async syncMasterData() {
