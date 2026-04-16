@@ -6,6 +6,7 @@ const MainApp = {
   async init() {
     await seedInitialData();
     this.loadDashboard();
+    this.scanner = null;
   },
 
   // ==========================
@@ -15,22 +16,248 @@ const MainApp = {
     const today = new Date().toISOString().split('T')[0];
     const transactions = await db.transactions.toArray();
     
-    // Filter hari ini (menggunakan awalan tanggal ISO format)
+    // Filter hari ini
     const todayTrx = transactions.filter(t => t.created_at.startsWith(today));
     
     const omzet = todayTrx.reduce((sum, t) => sum + (t.amount_paid - (t.change_amount || 0)), 0);
     const trxCount = todayTrx.length;
     
-    // Total barang terjual (hanya hitung dari transaksi hari ini)
     let itemsOut = 0;
     for(let t of todayTrx) {
       const details = await db.transaction_details.where({transaction_id: t.id}).toArray();
-      itemsOut += details.length; // Sederhana: hitung QTY baris, bisa ekspansi nanti
+      itemsOut += details.length;
     }
 
     document.getElementById('dash-omzet').innerText = `Rp ${omzet.toLocaleString('id-ID')}`;
     document.getElementById('dash-trx').innerText = `${trxCount} Nota`;
     document.getElementById('dash-items').innerText = `${itemsOut} Item`;
+
+    // Net Profit logic
+    const expenses = await db.expenses.toArray();
+    const todayExpenses = expenses.filter(e => e.date === today);
+    const totalExpToday = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
+    
+    const netProfit = omzet - totalExpToday;
+    document.getElementById('current-date').innerText = `Laba Bersih Hari Ini: Rp ${netProfit.toLocaleString('id-ID')}`;
+  },
+
+  // ==========================
+  // PENGELUARAN (EXPENSES)
+  // ==========================
+  async loadExpenses() {
+    const today = new Date().toISOString().split('T')[0];
+    const expenses = await db.expenses.toArray();
+    expenses.sort((a,b) => b.id - a.id);
+
+    const todayExp = expenses.filter(e => e.date === today);
+    const totalToday = todayExp.reduce((sum, e) => sum + e.amount, 0);
+    document.getElementById('expense-total-today').innerText = `Rp ${totalToday.toLocaleString('id-ID')}`;
+
+    const list = document.getElementById('expense-list');
+    list.innerHTML = expenses.map(e => `
+      <div class="bg-white p-5 rounded-[20px] shadow-sm border border-gray-100 flex justify-between items-center">
+        <div>
+           <h3 class="font-black text-lg text-gray-800">${e.name}</h3>
+           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${e.date} ${e.note ? '• ' + e.note : ''}</p>
+        </div>
+        <div class="text-right">
+           <p class="font-black text-xl text-red-600">Rp ${e.amount.toLocaleString('id-ID')}</p>
+        </div>
+      </div>
+    `).join('') || '<p class="text-center text-gray-400 mt-10 font-bold">Belum ada pengeluaran.</p>';
+  },
+
+  openAddExpense() {
+    document.getElementById('exp-name').value = '';
+    document.getElementById('exp-amount').value = '';
+    document.getElementById('exp-note').value = '';
+    document.getElementById('expense-modal').classList.remove('hidden');
+    document.getElementById('expense-modal').classList.add('flex');
+  },
+
+  closeAddExpense() {
+    document.getElementById('expense-modal').classList.add('hidden');
+    document.getElementById('expense-modal').classList.remove('flex');
+  },
+
+  async saveExpense() {
+    const name = document.getElementById('exp-name').value;
+    const amount = parseFloat(document.getElementById('exp-amount').value) || 0;
+    const note = document.getElementById('exp-note').value;
+    const date = new Date().toISOString().split('T')[0];
+
+    if(!name || amount <= 0) return alert('Nama dan Nominal wajib diisi!');
+
+    await db.expenses.add({ name, amount, note, date });
+    this.closeAddExpense();
+    this.loadExpenses();
+    this.loadDashboard();
+  },
+
+  // ==========================
+  // RIWAYAT TRANSAKSI
+  // ==========================
+  async loadRiwayat() {
+    const transactions = await db.transactions.toArray();
+    transactions.sort((a,b) => b.id - a.id);
+
+    document.getElementById('riwayat-total-count').innerText = `${transactions.length} Nota`;
+
+    const list = document.getElementById('riwayat-list');
+    list.innerHTML = transactions.map(t => {
+      const date = new Date(t.created_at);
+      const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      return `
+      <div class="bg-white p-5 rounded-[20px] shadow-sm border border-gray-100 flex justify-between items-center active:scale-95 transition-all cursor-pointer hover:border-blue-200" onclick="MainApp.viewRiwayatDetails(${t.id})">
+        <div>
+           <div class="flex items-center gap-2 mb-1">
+             <h3 class="font-black text-lg text-gray-800">${t.invoice_number}</h3>
+             <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">${t.payment_method}</span>
+           </div>
+           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${formattedDate}</p>
+        </div>
+        <div class="text-right">
+           <p class="font-black text-xl text-blue-600">Rp ${t.total_price.toLocaleString('id-ID')}</p>
+        </div>
+      </div>
+      `;
+    }).join('') || '<p class="text-center text-gray-400 mt-10 font-bold">Belum ada transaksi offline.</p>';
+  },
+
+  async viewRiwayatDetails(id) {
+    const trx = await db.transactions.get(id);
+    if (!trx) return;
+
+    const date = new Date(trx.created_at);
+    document.getElementById('rdm-invoice-number').innerText = trx.invoice_number;
+    document.getElementById('rdm-waktu').innerText = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    document.getElementById('rdm-total').innerText = `Rp ${trx.total_price.toLocaleString('id-ID')}`;
+    document.getElementById('rdm-change').innerText = `Rp ${(trx.change_amount || 0).toLocaleString('id-ID')}`;
+
+    const details = await db.transaction_details.where({transaction_id: id}).toArray();
+    const list = document.getElementById('rdm-items');
+    list.innerHTML = details.map(d => `
+      <div class="border border-gray-100 rounded-[16px] p-4 bg-gray-50 flex justify-between items-center shadow-sm">
+         <p class="font-black text-gray-800">${d.product_name}</p>
+         <p class="text-xs font-bold text-gray-500">${d.qty} x Rp ${d.price ? d.price.toLocaleString('id-ID') : '?'}</p>
+      </div>
+    `).join('') || '<p class="text-sm text-gray-500">Tidak ada rincian tercatat.</p>';
+
+    let printBtn = document.getElementById('rdm-print-btn');
+    if(!printBtn) {
+        printBtn = document.createElement('button');
+        printBtn.id = 'rdm-print-btn';
+        printBtn.className = "w-full mt-4 bg-blue-600 text-white font-black py-4 rounded-[16px] shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2";
+        printBtn.innerHTML = "🖨️ CETAK NOTA";
+        document.getElementById('rdm-items').parentNode.appendChild(printBtn);
+    }
+    printBtn.onclick = () => this.printReceipt(id);
+
+    document.getElementById('riwayat-detail-modal').classList.remove('hidden');
+    document.getElementById('riwayat-detail-modal').classList.add('flex');
+  },
+
+  closeRiwayatDetails() {
+    document.getElementById('riwayat-detail-modal').classList.add('hidden');
+    document.getElementById('riwayat-detail-modal').classList.remove('flex');
+  },
+
+  async printReceipt(id) {
+    const t = await db.transactions.get(id);
+    const details = await db.transaction_details.where({transaction_id: id}).toArray();
+    const date = new Date(t.created_at).toLocaleString('id-ID');
+    
+    let html = `
+      <div style="text-align: center; margin-bottom: 5px;">
+        <h2 style="margin: 0;">TOKOKU (KASIR)</h2>
+        <p style="margin: 5px 0;">Nota: ${t.invoice_number}</p>
+        <p style="margin: 0;">${date}</p>
+      </div>
+      <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
+      <table style="width: 100%; font-size: 10px;">
+    `;
+    
+    details.forEach(d => {
+      html += `
+        <tr>
+          <td colspan="2">${d.product_name}</td>
+        </tr>
+        <tr>
+          <td>${d.qty || 1} x Rp ${(d.price || 0).toLocaleString('id-ID')}</td>
+          <td style="text-align: right;">Rp ${( (d.qty || 1) * (d.price || 0) ).toLocaleString('id-ID')}</td>
+        </tr>
+      `;
+    });
+    
+    html += `
+      </table>
+      <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
+      <table style="width: 100%; font-weight: bold;">
+        <tr><td>TOTAL</td><td style="text-align: right;">Rp ${t.total_price.toLocaleString('id-ID')}</td></tr>
+        <tr><td>BAYAR</td><td style="text-align: right;">Rp ${t.amount_paid.toLocaleString('id-ID')}</td></tr>
+        <tr><td>KEMBALI</td><td style="text-align: right;">Rp ${t.change_amount.toLocaleString('id-ID')}</td></tr>
+      </table>
+      <div style="text-align: center; margin-top: 10px;">
+        <p>Terima Kasih!</p>
+      </div>
+    `;
+
+    const printSection = document.getElementById('print-section');
+    printSection.innerHTML = html;
+    printSection.style.display = 'block';
+    window.print();
+    printSection.style.display = 'none';
+  },
+
+  async exportToCSV() {
+    const trxs = await db.transactions.toArray();
+    let csv = "ID,Tanggal,Invoice,Total,Metode\n";
+    trxs.forEach(t => {
+       csv += `${t.id},"${t.created_at}",${t.invoice_number},${t.total_price},${t.payment_method}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Laporan_Kasir_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  },
+
+  // ==========================
+  // SCANNER LOGIC
+  // ==========================
+  startScanner(target) {
+     document.getElementById('scanner-container').style.display = 'flex';
+     this.scanner = new Html5Qrcode("reader");
+     const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+     
+     this.scanner.start({ facingMode: "environment" }, config, (decodedText) => {
+        this.stopScanner();
+        if(target === 'kasir') {
+           document.getElementById('kasir-search').value = decodedText;
+           this.loadKasirProducts(decodedText);
+        } else if(target === 'product') {
+           document.getElementById('prod-barcode').value = decodedText;
+        }
+     }).catch(err => {
+        alert("Gagal membuka kamera: " + err);
+        this.stopScanner();
+     });
+  },
+
+  stopScanner() {
+     if(this.scanner) {
+        this.scanner.stop().then(() => {
+           document.getElementById('scanner-container').style.display = 'none';
+        }).catch(() => {
+           document.getElementById('scanner-container').style.display = 'none';
+        });
+     } else {
+        document.getElementById('scanner-container').style.display = 'none';
+     }
   },
 
   // ==========================
@@ -112,6 +339,194 @@ const MainApp = {
           this.closeAddProduct();
           this.loadProducts();
       }
+  },
+
+  // ==========================
+  // BUKU BON (HUTANG)
+  // ==========================
+  async loadDebts(status = 'belum') {
+    if(status === 'belum') {
+        document.getElementById('tab-bon-belum').classList.remove('text-gray-500', 'bg-transparent', 'border-transparent');
+        document.getElementById('tab-bon-belum').classList.add('bg-white', 'text-orange-600', 'shadow-sm');
+        
+        document.getElementById('tab-bon-lunas').classList.remove('bg-white', 'text-orange-600', 'shadow-sm');
+        document.getElementById('tab-bon-lunas').classList.add('text-gray-500', 'bg-transparent', 'border-transparent');
+    } else {
+        document.getElementById('tab-bon-lunas').classList.remove('text-gray-500', 'bg-transparent', 'border-transparent');
+        document.getElementById('tab-bon-lunas').classList.add('bg-white', 'text-orange-600', 'shadow-sm');
+        
+        document.getElementById('tab-bon-belum').classList.remove('bg-white', 'text-orange-600', 'shadow-sm');
+        document.getElementById('tab-bon-belum').classList.add('text-gray-500', 'bg-transparent', 'border-transparent');
+    }
+
+    const debts = await db.debts.where({status: status}).toArray();
+    debts.sort((a,b) => b.id - a.id);
+
+    const allBelum = await db.debts.where({status: 'belum'}).toArray();
+    const totalPiutang = allBelum.reduce((sum, d) => sum + (d.total_hutang - d.sudah_dibayar), 0);
+    document.getElementById('bon-total-piutang').innerText = `Rp ${totalPiutang.toLocaleString('id-ID')}`;
+
+    const list = document.getElementById('debt-list');
+    list.innerHTML = debts.map(d => `
+      <div class="bg-white p-5 rounded-[20px] shadow-sm border border-gray-100 flex justify-between items-center active:scale-95 transition-all cursor-pointer" onclick="MainApp.viewDebtDetails(${d.id})">
+        <div>
+           <div class="flex items-center gap-2 mb-1">
+             <h3 class="font-black text-lg text-gray-800">${d.nama_pengutang}</h3>
+             ${d.status === 'lunas' ? '<span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">Lunas</span>' : ''}
+           </div>
+           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${d.tanggal_terakhir_bon}</p>
+        </div>
+        <div class="text-right">
+           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Sisa Hutang</p>
+           <p class="font-black text-xl text-orange-600">Rp ${(d.total_hutang - d.sudah_dibayar).toLocaleString('id-ID')}</p>
+        </div>
+      </div>
+    `).join('') || '<p class="text-center text-gray-400 mt-10 font-bold">Tidak ada data.</p>';
+  },
+
+  openAddDebt() {
+    document.getElementById('bon-customer').value = '';
+    document.getElementById('bon-product-name').value = '';
+    document.getElementById('bon-price').value = '';
+    document.getElementById('bon-qty').value = '1';
+    document.getElementById('add-bon-modal').classList.remove('hidden');
+    document.getElementById('add-bon-modal').classList.add('flex');
+  },
+
+  closeAddDebt() {
+    document.getElementById('add-bon-modal').classList.add('hidden');
+    document.getElementById('add-bon-modal').classList.remove('flex');
+  },
+
+  async saveDebt() {
+    const customer = document.getElementById('bon-customer').value;
+    const productName = document.getElementById('bon-product-name').value;
+    const price = parseFloat(document.getElementById('bon-price').value) || 0;
+    const qty = parseInt(document.getElementById('bon-qty').value) || 1;
+
+    if(!customer || !productName || price <= 0) return alert('Nama, Barang, dan Harga wajib diisi!');
+
+    const totalHarga = price * qty;
+    const today = new Date().toISOString().split('T')[0];
+
+    let debt = (await db.debts.toArray()).find(d => d.nama_pengutang.toLowerCase() === customer.toLowerCase() && d.status === 'belum');
+
+    let debtId;
+    if(debt) {
+       debt.total_hutang += totalHarga;
+       debt.tanggal_terakhir_bon = today;
+       await db.debts.put(debt);
+       debtId = debt.id;
+    } else {
+       debtId = await db.debts.add({
+          nama_pengutang: customer,
+          total_hutang: totalHarga,
+          sudah_dibayar: 0,
+          status: 'belum',
+          tanggal_terakhir_bon: today
+       });
+    }
+
+    await db.debt_details.add({
+       debt_id: debtId,
+       nama_produk: productName,
+       jumlah: qty,
+       harga_satuan: price,
+       total_harga: totalHarga,
+       tanggal_bon: today,
+       is_lunas: 0
+    });
+
+    this.closeAddDebt();
+    this.loadDebts();
+  },
+
+  async viewDebtDetails(id) {
+    const debt = await db.debts.get(id);
+    if (!debt) return;
+    
+    document.getElementById('dbm-customer-name').innerText = debt.nama_pengutang;
+    document.getElementById('dbm-total').innerText = `Rp ${debt.total_hutang.toLocaleString('id-ID')}`;
+    document.getElementById('dbm-paid').innerText = `Rp ${debt.sudah_dibayar.toLocaleString('id-ID')}`;
+    document.getElementById('dbm-sisa').innerText = `Rp ${(debt.total_hutang - debt.sudah_dibayar).toLocaleString('id-ID')}`;
+    
+    if(debt.status === 'lunas') {
+        document.getElementById('dbm-actions').classList.add('hidden');
+        document.getElementById('dbm-actions').classList.remove('flex');
+    } else {
+        document.getElementById('dbm-actions').classList.remove('hidden');
+        document.getElementById('dbm-actions').classList.add('flex');
+    }
+
+    const details = await db.debt_details.where({debt_id: id}).toArray();
+    const list = document.getElementById('dbm-items');
+    list.innerHTML = details.map(d => `
+      <div class="border border-gray-100 rounded-[20px] p-4 bg-gray-50 flex justify-between items-center shadow-sm">
+         <div>
+            <p class="font-black text-gray-800">${d.nama_produk}</p>
+            <p class="text-xs font-bold text-gray-500">${d.jumlah} x Rp ${d.harga_satuan.toLocaleString('id-ID')}</p>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">${d.tanggal_bon}</p>
+         </div>
+         <p class="font-black text-blue-700">Rp ${d.total_harga.toLocaleString('id-ID')}</p>
+      </div>
+    `).join('');
+
+    this.activeDebtId = id;
+    document.getElementById('detail-bon-modal').classList.remove('hidden');
+    document.getElementById('detail-bon-modal').classList.add('flex');
+  },
+
+  closeDebtDetails() {
+    document.getElementById('detail-bon-modal').classList.add('hidden');
+    document.getElementById('detail-bon-modal').classList.remove('flex');
+  },
+
+  openPayDebtModal() {
+     this.closeDebtDetails();
+     document.getElementById('ppm-amount').value = '';
+     document.getElementById('pay-partial-modal').classList.remove('hidden');
+     document.getElementById('pay-partial-modal').classList.add('flex');
+     this.updatePpmSisa();
+  },
+
+  async updatePpmSisa() {
+     const debt = await db.debts.get(this.activeDebtId);
+     const sisa = debt.total_hutang - debt.sudah_dibayar;
+     document.getElementById('ppm-sisa').innerText = `Rp ${sisa.toLocaleString('id-ID')}`;
+  },
+
+  async processPayDebtPartial() {
+     const amount = parseFloat(document.getElementById('ppm-amount').value) || 0;
+     if(amount <= 0) return alert('Masukkan nominal yang valid');
+     
+     const debt = await db.debts.get(this.activeDebtId);
+     const sisa = debt.total_hutang - debt.sudah_dibayar;
+     const byr = Math.min(amount, sisa);
+
+     debt.sudah_dibayar += byr;
+     
+     if (debt.sudah_dibayar >= debt.total_hutang) {
+         debt.status = 'lunas';
+     }
+     
+     await db.debts.put(debt);
+     
+     document.getElementById('pay-partial-modal').classList.add('hidden');
+     document.getElementById('pay-partial-modal').classList.remove('flex');
+     alert(`✅ Pembayaran Rp ${byr.toLocaleString('id-ID')} berhasil dicatat.`);
+     this.loadDebts();
+  },
+
+  async payDebtAll() {
+     if(confirm('Yakin ingin melunasi seluruh hutang ini?')) {
+        const debt = await db.debts.get(this.activeDebtId);
+        debt.sudah_dibayar = debt.total_hutang;
+        debt.status = 'lunas';
+        await db.debts.put(debt);
+        this.closeDebtDetails();
+        alert('Telah Lunas!');
+        this.loadDebts();
+     }
   },
 
   // ==========================
@@ -262,7 +677,6 @@ const MainApp = {
 
     const change = paid - total;
     
-    // Create transaction
     const trxId = await db.transactions.add({
       invoice_number: 'OFF-' + new Date().getTime(),
       created_at: new Date().toISOString(),
@@ -272,15 +686,15 @@ const MainApp = {
       total_price: total
     });
 
-    // Reduce stock and create details
     for(let item of cart) {
        await db.transaction_details.add({
          transaction_id: trxId,
          product_id: item.id,
-         product_name: item.name
+         product_name: item.name,
+         qty: item.qty,
+         price: item.price
        });
        
-       // Sederhana: Update stok
        const p = await db.products.get(item.id);
        if(p) {
           p.stock = p.stock - item.qty;
@@ -288,9 +702,9 @@ const MainApp = {
        }
     }
     
-    // Jika ada hutang logic (diskip untuk kesederhanaan, hanya cash)
-
-    alert(`✅ Pembayaran Berhasil!\nTotal Belanja: Rp ${total}\nKembalian: Rp ${change}\nStruk siap dicetak (Offline).`);
+    if(confirm(`✅ Pembayaran Berhasil!\nTotal Belanja: Rp ${total}\nKembalian: Rp ${change}\n\nIngin cetak struk?`)) {
+       this.printReceipt(trxId);
+    }
     cart = [];
     this.updateCartUI();
     this.closeCheckoutModal();
